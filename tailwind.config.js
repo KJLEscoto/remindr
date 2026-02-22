@@ -22,6 +22,7 @@ export default {
     extend: {
       fontFamily: {
         poppins: ["Poppins", "ui-sans-serif", "system-ui"],
+        instrument: ["Instrument Serif", "ui-serif", "system-ui"],
         // pacifico: ["Pacifico", "cursive", "system-ui"],
       },
     },

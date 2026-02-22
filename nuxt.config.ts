@@ -11,15 +11,28 @@ export default defineNuxtConfig({
         weights: [300, 400, 500, 600, 700],
         styles: ["normal", "italic"],
       },
-      // {
-      //   name: "Pacifico",
-      //   provider: "google",
-      //   weights: [400],
-      //   styles: ["normal"],
-      // },
+      {
+        name: "Instrument Serif",
+        provider: "google",
+        weights: [400],
+        styles: ["normal", "italic"],
+      }
     ],
   },
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
-  }
+  },
+  app: {
+    head: {
+      title: "Remindr | KinWebb",
+      meta: [
+        { charset: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { name: "description", content: "Remindr - A reminder app" },
+      ],
+      link: [
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      ],
+    },
+  },
 })
