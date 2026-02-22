@@ -8,7 +8,7 @@
 
       <!-- Panel -->
       <section ref="panel"
-        class="absolute bg-gradient-to-b from-[#151515] to-[#000000] text-white shadow-2xl will-change-transform touch-pan-y h-fit"
+        class="absolute bg-gradient-to-b from-[#151515] to-[#000000] text-white shadow-2xl will-change-transform touch-pan-y h-fit pb-6"
         :class="[panelRadiusClass, panelPosClass, panelSizeClass, panelClass]" :style="panelStyle" role="dialog"
         aria-modal="true" :aria-label="title || 'Drawer'" tabindex="-1" @keydown.esc.prevent="onEsc"
         @pointerdown="onPointerDown">

@@ -7,5 +7,23 @@
 }
 
 .bg-glass {
-  @apply bg-black/30 border border-white/10 p-4 backdrop-blur-sm text-white;
+  @apply bg-black/30 border border-white/10 backdrop-blur-sm text-white;
+}
+
+/* scale pop transition */
+.pop-enter-active,
+.pop-leave-active {
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease;
+}
+.pop-enter-from,
+.pop-leave-to {
+  transform: scale(0.92);
+  opacity: 0;
+}
+.pop-enter-to,
+.pop-leave-from {
+  transform: scale(1);
+  opacity: 1;
 }

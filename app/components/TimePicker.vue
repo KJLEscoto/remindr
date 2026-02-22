@@ -8,7 +8,7 @@
 
     <!-- Button opens the panel -->
     <button type="button"
-      class="absolute right-2 top-1/2 z-10 -translate-y-1/2 p-2 rounded-full bg-transparent hover:bg-white/10 transition duration-200 ease-in"
+      class="absolute right-2 top-1/2 z-10 -translate-y-1/2 p-2 rounded-full bg-[#343434] hover:bg-[#2e2e2e] transition duration-200 ease-in"
       @click="toggle" aria-label="Select time" ref="anchorBtn">
       <svg xmlns="http://www.w3.org/2000/svg" class="!size-5 pointer-events-none" viewBox="0 0 15 15">
         <path fill="currentColor"
@@ -17,49 +17,86 @@
     </button>
 
     <!-- Teleported panel -->
-    <Teleport to="body">
-      <div v-if="open" ref="panel"
-        class="fixed z-[9999] w-[320px] max-w-[90vw] rounded-2xl border border-white/10 bg-neutral-950/90 text-white backdrop-blur-xl shadow-2xl p-3"
-        :style="panelStyle">
-        <div class="grid grid-cols-3 gap-2">
-          <div>
-            <p class="mb-1 text-xs text-white/60 px-1">Hour</p>
-            <select v-model="draftHour"
-              class="w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none">
-              <option disabled value="00">--</option>
-              <option class="text-black" v-for="h in hours" :key="h" :value="h">{{ h }}</option>
-            </select>
+    <Transition name="pop">
+
+      <Teleport to="body">
+
+        <div v-if="open" ref="panel"
+          class="fixed z-[9999] w-[320px] max-w-[90vw] rounded-2xl border border-white/10 bg-neutral-950/90 text-white backdrop-blur-xl shadow-2xl p-3"
+          :style="panelStyle">
+          <div class="grid grid-cols-3 gap-2">
+            <section class="group">
+              <p class="mb-1 text-xs text-white/60 px-1">Hour</p>
+              <div class="relative">
+                <select v-model="draftHour"
+                  class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer">
+                  <option class="text-black" v-for="h in hours" :key="h" :value="h">{{ h }}</option>
+                </select>
+                <span
+                  class="absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none p-1 rounded-full z-10 bg-[#4a4a4a] group-hover:bg-[#404040] transition duration-200 ease-in">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="!size-5 text-white" viewBox="0 0 24 24">
+                    <rect width="24" height="24" fill="none" />
+                    <path fill="currentColor" fill-rule="evenodd"
+                      d="M11.47 4.72a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 0 1-1.06 1.06L12 6.31L8.78 9.53a.75.75 0 0 1-1.06-1.06zm-3.75 9.75a.75.75 0 0 1 1.06 0L12 17.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0l-3.75-3.75a.75.75 0 0 1 0-1.06"
+                      clip-rule="evenodd" />
+                  </svg>
+                </span>
+              </div>
+            </section>
+
+            <section class="group">
+              <p class="mb-1 text-xs text-white/60 px-1">Minute</p>
+              <div class="relative">
+                <select v-model="draftMinute"
+                  class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer">
+                  <option class="text-black" v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
+                </select>
+                <span
+                  class="absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none p-1 rounded-full z-10 bg-[#4a4a4a] group-hover:bg-[#404040] transition duration-200 ease-in">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="!size-5 text-white" viewBox="0 0 24 24">
+                    <rect width="24" height="24" fill="none" />
+                    <path fill="currentColor" fill-rule="evenodd"
+                      d="M11.47 4.72a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 0 1-1.06 1.06L12 6.31L8.78 9.53a.75.75 0 0 1-1.06-1.06zm-3.75 9.75a.75.75 0 0 1 1.06 0L12 17.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0l-3.75-3.75a.75.75 0 0 1 0-1.06"
+                      clip-rule="evenodd" />
+                  </svg>
+                </span>
+              </div>
+            </section>
+
+            <section class="group">
+              <p class="mb-1 text-xs text-white/60 px-1">Period</p>
+              <div class="relative">
+                <select v-model="draftPeriod"
+                  class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer">
+                  <option class="text-black" value="AM">AM</option>
+                  <option class="text-black" value="PM">PM</option>
+                </select>
+                <span
+                  class="absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none p-1 rounded-full z-10 bg-[#4a4a4a] group-hover:bg-[#404040] transition duration-200 ease-in">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="!size-5 text-white" viewBox="0 0 24 24">
+                    <rect width="24" height="24" fill="none" />
+                    <path fill="currentColor" fill-rule="evenodd"
+                      d="M11.47 4.72a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 0 1-1.06 1.06L12 6.31L8.78 9.53a.75.75 0 0 1-1.06-1.06zm-3.75 9.75a.75.75 0 0 1 1.06 0L12 17.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0l-3.75-3.75a.75.75 0 0 1 0-1.06"
+                      clip-rule="evenodd" />
+                  </svg>
+                </span>
+              </div>
+            </section>
           </div>
 
-          <div>
-            <p class="mb-1 text-xs text-white/60 px-1">Minute</p>
-            <select v-model="draftMinute"
-              class="w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none">
-              <option class="text-black" v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
-            </select>
-          </div>
-
-          <div>
-            <p class="mb-1 text-xs text-white/60 px-1">AM/PM</p>
-            <select v-model="draftPeriod"
-              class="w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none">
-              <option class="text-black" value="AM">AM</option>
-              <option class="text-black" value="PM">PM</option>
-            </select>
+          <div class="mt-3 flex items-center justify-end gap-2 border-t border-white/5 pt-3">
+            <button type="button" class=" text-sm px-4 py-2 rounded-full bg-white/10 hover:bg-white/15"
+              @click="open = false">
+              Close
+            </button>
+            <button type="button" class=" text-sm px-4 py-2 rounded-full bg-white text-black hover:opacity-90"
+              @click="applyAndClose">
+              Apply
+            </button>
           </div>
         </div>
-
-        <div class="mt-3 flex items-center justify-end gap-2">
-          <button type="button" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15" @click="open = false">
-            Close
-          </button>
-          <button type="button" class="px-4 py-2 rounded-xl bg-white text-black hover:opacity-90"
-            @click="applyAndClose">
-            Apply
-          </button>
-        </div>
-      </div>
-    </Teleport>
+      </Teleport>
+    </Transition>
   </div>
 </template>
 
