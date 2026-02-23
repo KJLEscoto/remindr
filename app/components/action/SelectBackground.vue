@@ -82,13 +82,15 @@ const { $background } = useNuxtApp()
 const savedBg = computed<BackgroundItem>(() => $background.current.value)
 
 const savedThumbSrc = computed(() => {
-  const match = backgrounds.value.find((b) => b.videoSrc === savedBg.value.src)
-  return match?.thumbSrc ?? "/thumbs/Nocturne.png" // fallback
-  // return match?.thumbSrc
+  const match =
+    backgrounds.value.find((b) => b.videoSrc === savedBg.value.src) ??
+    backgrounds.value.find((b) => b.videoSrc === $background.DEFAULT_BG.src)
+
+  return match?.thumbSrc // may be undefined while backgrounds.json is still loading
 })
 
 // draft (preview only)
-const draftBg = ref<BackgroundItem>(savedBg.value)
+const draftBg = ref<BackgroundItem>($background.current.value)
 const draftKey = ref<string>("")
 
 const isPreviewing = computed(() => draftBg.value.src !== savedBg.value.src)

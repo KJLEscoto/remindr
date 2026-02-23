@@ -7,7 +7,7 @@ export type BackgroundItem = {
 
 const DEFAULT_BG: BackgroundItem = {
   label: "Nocturne",
-  src: "/videos/Nocturne.mov",
+  src: "/videos/Nocturne.mp4",
 }
 
 export default defineNuxtPlugin(() => {
