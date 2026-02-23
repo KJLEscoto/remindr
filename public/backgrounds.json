@@ -1,0 +1,38 @@
+[
+  {
+    "key": "Flux",
+    "label": "Flux",
+    "videoSrc": "/videos/Flux.mp4",
+    "thumbSrc": "/thumbs/Flux.png"
+  },
+  {
+    "key": "Helix",
+    "label": "Helix",
+    "videoSrc": "/videos/Helix.mp4",
+    "thumbSrc": "/thumbs/Helix.png"
+  },
+  {
+    "key": "Horizon",
+    "label": "Horizon",
+    "videoSrc": "/videos/Horizon.mp4",
+    "thumbSrc": "/thumbs/Horizon.png"
+  },
+  {
+    "key": "Nocturne",
+    "label": "Nocturne",
+    "videoSrc": "/videos/Nocturne.mp4",
+    "thumbSrc": "/thumbs/Nocturne.png"
+  },
+  {
+    "key": "Radar",
+    "label": "Radar",
+    "videoSrc": "/videos/Radar.mp4",
+    "thumbSrc": "/thumbs/Radar.png"
+  },
+  {
+    "key": "Wavy",
+    "label": "Wavy",
+    "videoSrc": "/videos/Wavy.mp4",
+    "thumbSrc": "/thumbs/Wavy.png"
+  }
+]

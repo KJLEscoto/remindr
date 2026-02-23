@@ -3,8 +3,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
+        "bg:manifest": "node scripts/generate-background-manifest.mjs",
+    "dev": "npm run bg:manifest && nuxt dev",
+    "build": "npm run bg:manifest && nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"

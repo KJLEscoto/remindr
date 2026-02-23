@@ -1,8 +1,15 @@
 <template>
   <button @click="openPicker"
     class="w-12 h-12 rounded-full border border-white/30 hover:border-white/50 transition duration-200 ease-in cursor-pointer overflow-hidden">
-    <!-- ✅ always show SAVED background outside -->
-    <video class="h-full w-full object-cover" :src="savedBg.src" autoplay muted loop />
+    <span v-if="savedThumbSrc">
+      <img class="h-full w-full object-cover" :src="savedThumbSrc" :alt="savedBg.label" loading="lazy"
+        draggable="false" />
+    </span>
+
+    <!-- fallback or loading -->
+    <span v-else>
+      <div class="bg-white/10 animate-pulse h-full w-full"></div>
+    </span>
   </button>
 
   <BaseDrawer :closable="false" v-model="open" side="bottom" :draggable="true" size="full"
@@ -11,14 +18,17 @@
       <section class="space-y-2 text-center">
         <h1 class="text-white text-2xl">Current Background</h1>
 
-        <!-- ✅ preview shows DRAFT -->
+        <!-- preview shows DRAFT -->
         <div class="relative rounded-3xl overflow-hidden aspect-video">
-          <!-- Skeleton (same size as video) -->
+          <!-- skeleton -->
           <div v-show="previewLoading" class="absolute inset-0 rounded-3xl bg-white/10 animate-pulse" />
+
+          <!-- show text only when draft != saved -->
           <p v-if="isPreviewing"
-            class="absolute inset-0 flex items-center justify-center text-white/70 mix-blend-difference">
+            class="absolute inset-0 flex items-center justify-center text-white mix-blend-difference">
             Background Preview
           </p>
+
           <video class="h-full w-full object-cover rounded-3xl" :src="draftBg.src" autoplay muted loop playsinline
             @loadstart="previewLoading = true" @loadeddata="previewLoading = false" @canplay="previewLoading = false" />
         </div>
@@ -27,14 +37,15 @@
       <form class="flex flex-col gap-4 items-center justify-center" @submit.prevent="applyBackground">
         <p class="text-white/70 font-light">Select below</p>
 
-        <div class="flex items-center gap-4">
-          <label v-for="bg in backgrounds" :key="bg.label" class="cursor-pointer" data-drawer-no-drag>
-            <input type="radio" v-model="draftLabel" :value="bg.label" class="hidden" @change="preview(bg)" />
-
-            <video data-drawer-no-drag class="h-20 w-20 object-cover rounded-full border-2 pointer-events-auto"
-              :class="draftLabel === bg.label ? 'border-white' : 'border-white/20 hover:border-white/40 transition duration-200 ease-in'"
-              :src="bg.src" autoplay muted loop />
-          </label>
+        <!-- thumbnails (PNG) -->
+        <div class="flex items-center gap-4 overflow-x-auto pb-1">
+          <button v-for="bg in backgrounds" :key="bg.key" type="button" data-drawer-no-drag
+            class="h-20 w-20 rounded-full overflow-hidden border-2 transition duration-200 ease-in flex-none"
+            :class="draftKey === bg.key ? 'border-white' : 'border-white/20 hover:border-white/40'"
+            @click="preview(bg)">
+            <img :src="bg.thumbSrc" :alt="bg.label" class="h-full w-full object-cover" loading="lazy"
+              draggable="false" />
+          </button>
         </div>
 
         <button class="w-full py-3 rounded-full bg-white text-black hover:opacity-90">
@@ -46,28 +57,48 @@
 </template>
 
 <script setup lang="ts">
+type BgManifestItem = {
+  key: string
+  label: string
+  videoSrc: string
+  thumbSrc: string
+}
+
+// what your background cookie expects
 type BackgroundItem = { label: string; src: string }
 
 const open = ref(false)
+const previewLoading = ref(true)
 
-const backgrounds: BackgroundItem[] = [
-  { label: "Nocturne", src: "/videos/Nocturne.mov" },
-  { label: "Helix", src: "/videos/Helix.mov" },
-]
+const backgrounds = ref<BgManifestItem[]>([])
+
+onMounted(async () => {
+  backgrounds.value = await $fetch<BgManifestItem[]>("/backgrounds.json")
+})
 
 const { $background } = useNuxtApp()
 
-// ✅ saved (cookie-backed)
-const savedBg = computed(() => $background.current.value)
-const isPreviewing = computed(() => draftBg.value.src !== savedBg.value.src)
+// saved (cookie-backed)
+const savedBg = computed<BackgroundItem>(() => $background.current.value)
 
-// ✅ draft (preview only)
+const savedThumbSrc = computed(() => {
+  const match = backgrounds.value.find((b) => b.videoSrc === savedBg.value.src)
+  // return match?.thumbSrc ?? "/thumbs/Nocturne.png" // fallback
+  return match?.thumbSrc
+})
+
+// draft (preview only)
 const draftBg = ref<BackgroundItem>(savedBg.value)
-const draftLabel = ref<string>(savedBg.value.label)
+const draftKey = ref<string>("")
+
+const isPreviewing = computed(() => draftBg.value.src !== savedBg.value.src)
 
 function syncDraftToSaved() {
   draftBg.value = savedBg.value
-  draftLabel.value = savedBg.value.label
+
+  // try to find matching key in manifest by video src
+  const match = backgrounds.value.find((b) => b.videoSrc === savedBg.value.src)
+  draftKey.value = match?.key ?? ""
 }
 
 function openPicker() {
@@ -75,10 +106,10 @@ function openPicker() {
   open.value = true
 }
 
-function preview(bg: BackgroundItem) {
-  // update preview only
-  draftBg.value = bg
-  draftLabel.value = bg.label
+function preview(bg: BgManifestItem) {
+  // update preview only (video)
+  draftBg.value = { label: bg.label, src: bg.videoSrc }
+  draftKey.value = bg.key
 }
 
 function applyBackground() {
@@ -87,19 +118,16 @@ function applyBackground() {
   open.value = false
 }
 
-// called whenever drawer opens/closes (v-model update)
+// drawer open/close
 function onDrawerToggle(v: boolean) {
-  // if closing without applying, revert to saved
-  if (!v) syncDraftToSaved()
+  if (!v) syncDraftToSaved() // closing without apply -> revert
   open.value = v
 }
 
-const previewLoading = ref(true)
-
+// re-show skeleton whenever src changes
 watch(
   () => draftBg.value.src,
   () => {
-    // when user selects a different bg, show skeleton again until it loads
     previewLoading.value = true
   }
 )
