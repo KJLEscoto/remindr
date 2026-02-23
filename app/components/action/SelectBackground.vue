@@ -83,8 +83,8 @@ const savedBg = computed<BackgroundItem>(() => $background.current.value)
 
 const savedThumbSrc = computed(() => {
   const match = backgrounds.value.find((b) => b.videoSrc === savedBg.value.src)
-  // return match?.thumbSrc ?? "/thumbs/Nocturne.png" // fallback
-  return match?.thumbSrc
+  return match?.thumbSrc ?? "/thumbs/Nocturne.png" // fallback
+  // return match?.thumbSrc
 })
 
 // draft (preview only)
