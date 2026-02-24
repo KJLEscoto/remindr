@@ -11,7 +11,7 @@
   <BaseDrawer :closable="false" v-model="open" side="bottom" :draggable="true" size="full">
     <div class="w-1/3 mx-auto space-y-6">
       <section class="space-y-2 text-center">
-        <h1 class="text-white text-2xl">What should I remind you about today?</h1>
+        <h1 class="text-white text-4xl font-instrument">What should I remind you about today?</h1>
         <p class="text-white/70 font-light">A gentle ping when it’s time.</p>
       </section>
 

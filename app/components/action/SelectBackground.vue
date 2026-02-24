@@ -16,7 +16,7 @@
     @update:modelValue="onDrawerToggle">
     <div class="w-1/3 mx-auto space-y-6">
       <section class="space-y-2 text-center">
-        <h1 class="text-white text-2xl">Current Background</h1>
+        <h1 class="text-white text-4xl font-instrument">Current Background</h1>
 
         <!-- preview shows DRAFT -->
         <div class="relative rounded-3xl overflow-hidden aspect-video">
@@ -39,13 +39,19 @@
 
         <!-- thumbnails (PNG) -->
         <div class="flex items-center gap-4 overflow-x-auto pb-1">
-          <button v-for="bg in backgrounds" :key="bg.key" type="button" data-drawer-no-drag
-            class="h-20 w-20 rounded-full overflow-hidden border-2 transition duration-200 ease-in flex-none"
-            :class="draftKey === bg.key ? 'border-white' : 'border-white/20 hover:border-white/40'"
-            @click="preview(bg)">
-            <img :src="bg.thumbSrc" :alt="bg.label" class="h-full w-full object-cover" loading="lazy"
-              draggable="false" />
-          </button>
+          <div v-for="bg in backgrounds" :key="bg.key">
+            <button type="button" data-drawer-no-drag
+              class="h-20 w-20 rounded-full overflow-hidden border-2 transition duration-200 ease-in flex-none"
+              :class="draftKey === bg.key ? 'border-white' : 'border-white/20 hover:border-white/40'"
+              @click="preview(bg)">
+              <img :src="bg.thumbSrc" :alt="bg.label" class="h-full w-full object-cover" loading="lazy"
+                draggable="false" />
+            </button>
+            <!-- label -->
+            <div class="text-center text-xs font-light text-white w-full p-2 pointer-events-none text-nowrap">
+              {{ bg.label }}
+            </div>
+          </div>
         </div>
 
         <button class="w-full py-3 rounded-full bg-white text-black hover:opacity-90">
