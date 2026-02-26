@@ -76,6 +76,7 @@ function showSuccess(savedLabel: string, savedTime: string) {
     description: `${capitalizeWords(savedLabel)} • ${savedTime}`,
     duration: 0,
     sound: "success",
+    closable: false
   });
 }
 
