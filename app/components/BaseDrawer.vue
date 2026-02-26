@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <!-- Mount is controlled by `shown` so we can animate out before unmount -->
-    <div v-if="shown" class="fixed inset-0 z-[9999]">
+    <div v-if="shown" class="fixed inset-0 z-50">
       <!-- Overlay -->
       <div
         class="absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity duration-300"

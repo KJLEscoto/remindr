@@ -30,7 +30,7 @@
           </div>
 
           <p class="text-white/80 mt-2">
-            'til <span class="capitalize">{{ item.label }}</span> ({{ item.time }})
+            <span class="capitalize">{{ item.label }}</span> ({{ item.time }})
           </p>
         </div>
       </div>
@@ -57,12 +57,32 @@ const props = defineProps<{
   date: string
   reminders: Reminder[]
   remainingMap: Map<string, Remaining>
+  currentTime: string // ✅ add
 }>()
 
 const emit = defineEmits<{
   (e: "update:activeIndex", v: number): void
+  (e: "trigger", id: string): void
 }>()
 
+const triggered = ref(new Set<string>())
+
+watch(
+  () => props.currentTime,
+  (nowStr) => {
+    for (const r of props.reminders) {
+      // normalize spaces/case just in case
+      const a = nowStr.trim().toUpperCase()
+      const b = r.time.trim().toUpperCase()
+
+      if (a !== b) continue
+      if (triggered.value.has(r.id)) continue
+
+      triggered.value.add(r.id)
+      emit("trigger", r.id)
+    }
+  }
+)
 
 const totalSlides = computed(() => 1 + props.reminders.length)
 const activeIndex = ref(0)

@@ -1,32 +1,85 @@
 <template>
-  <button type="button" :disabled="disabled" @click="onDone"
-    class="bg-green-950 px-5 py-3 rounded-full border border-white/10 hover:border-green-500/50 transition duration-200 ease-in cursor-pointer flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed">
+  <button
+    type="button"
+    :disabled="disabled"
+    @click="onDone"
+    class="bg-green-950 px-5 py-3 rounded-full border border-white/10 hover:border-green-500/50 transition duration-200 ease-in cursor-pointer flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+  >
     <p class="text-sm">mark as done</p>
-
-    <svg xmlns="http://www.w3.org/2000/svg" class="!size-5" width="24" height="24" viewBox="0 0 24 24">
-      <path fill="currentColor"
-        d="M9 16.17L5.53 12.7a.996.996 0 1 0-1.41 1.41l4.18 4.18c.39.39 1.02.39 1.41 0L20.29 7.71a.996.996 0 1 0-1.41-1.41z" />
-    </svg>
+    <Check class="size-5" />
   </button>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import { Check } from "lucide-vue-next";
+import { toast } from "~/lib/toast";
+
+type ReminderItem = {
+  id: string;
+  label: string;
+  time: string;
+};
+
 const props = defineProps<{
-  reminderId?: string
-  disabled?: boolean
-}>()
+  reminderId?: string;
+  disabled?: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: "done"): void
-}>()
+  (e: "done"): void;
+}>();
 
-const { $reminders } = useNuxtApp()
+const { $reminders } = useNuxtApp();
+
+/**
+ * Prefer plugin state if available.
+ * Fallback: read cookie directly (adjust cookie key if yours differs).
+ */
+const reminders = computed<ReminderItem[]>(() => {
+  const fromPlugin = ($reminders as any)?.items?.value ?? ($reminders as any)?.items;
+  if (Array.isArray(fromPlugin)) return fromPlugin;
+
+  const cookie = useCookie<ReminderItem[]>("reminders", { default: () => [] });
+  return cookie.value ?? [];
+});
+
+function capitalizeWords(str: string) {
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/\b\p{L}/gu, (c) => c.toUpperCase());
+}
+
+function showDoneToast(label: string, time: string) {
+  toast.complete("Reminder completed!", {
+    description: `${capitalizeWords(label)} • ${time}`,
+    duration: 0,
+    sound: "success",
+    closable: false
+  });
+}
 
 function onDone() {
-  if (props.disabled) return
-  if (!props.reminderId) return
+  if (props.disabled) return;
+  if (!props.reminderId) return;
 
-  $reminders.remove(props.reminderId)
-  emit("done")
+  // ✅ get label/time BEFORE removing
+  const item = reminders.value.find((r) => r.id === props.reminderId);
+
+  $reminders.remove(props.reminderId);
+
+  if (item) {
+    showDoneToast(item.label, item.time);
+  } else {
+    toast.complete("Reminder completed!", {
+      description: "Removed from your list.",
+      duration: 0,
+      sound: "success",
+      closable: false
+    });
+  }
+
+  emit("done");
 }
 </script>

@@ -1,45 +1,60 @@
 <template>
   <div class="relative" ref="root">
     <!-- Display input -->
-    <input class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light" :value="display"
-      placeholder="--:-- --" readonly @focus="($event.target as HTMLInputElement).blur()" aria-label="Selected time" />
+    <input
+      class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light"
+      :value="display"
+      placeholder="--:-- --"
+      readonly
+      @focus="($event.target as HTMLInputElement).blur()"
+      aria-label="Selected time"
+    />
 
     <input type="hidden" :name="name" :value="value" />
 
     <!-- Button opens the panel -->
-    <button type="button"
+    <button
+      type="button"
       class="absolute right-2 top-1/2 z-10 -translate-y-1/2 p-2 rounded-full bg-[#343434] hover:bg-[#2e2e2e] transition duration-200 ease-in"
-      @click="toggle" aria-label="Select time" ref="anchorBtn">
-      <svg xmlns="http://www.w3.org/2000/svg" class="!size-5 pointer-events-none" viewBox="0 0 15 15">
-        <path fill="currentColor"
-          d="M7.5.877a6.623 6.623 0 1 1 0 13.246A6.623 6.623 0 0 1 7.5.877m0 .95a5.674 5.674 0 1 0 0 11.343a5.674 5.674 0 0 0-.002-11.345M7.5 4a.5.5 0 0 1 .5.5v2.793l1.854 1.854l.064.078a.5.5 0 0 1-.693.693l-.078-.064l-2-2A.5.5 0 0 1 7 7.5v-3a.5.5 0 0 1 .5-.5" />
-      </svg>
+      @click="toggle"
+      aria-label="Select time"
+      ref="anchorBtn"
+    >
+      <Clock4 class="size-5 pointer-events-none" />
     </button>
 
     <!-- Teleported panel -->
     <Transition name="pop">
-
       <Teleport to="body">
-
-        <div v-if="open" ref="panel"
+        <div
+          v-if="open"
+          ref="panel"
           class="fixed z-[9999] w-[320px] max-w-[90vw] rounded-2xl border border-white/10 bg-neutral-950/90 text-white backdrop-blur-xl shadow-2xl p-3"
-          :style="panelStyle">
+          :style="panelStyle"
+        >
           <div class="grid grid-cols-3 gap-2">
             <section class="group">
               <p class="mb-1 text-xs text-white/60 px-1">Hour</p>
               <div class="relative">
-                <select v-model="draftHour"
-                  class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer">
-                  <option class="text-black" v-for="h in hours" :key="h" :value="h">{{ h }}</option>
+                <select
+                  v-model="draftHour"
+                  class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer"
+                >
+                  <option
+                    class="text-black"
+                    v-for="h in hours"
+                    :key="h"
+                    :value="h"
+                  >
+                    {{ h }}
+                  </option>
                 </select>
                 <span
-                  class="absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none p-1 rounded-full z-10 bg-[#4a4a4a] group-hover:bg-[#404040] transition duration-200 ease-in">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="!size-5 text-white" viewBox="0 0 24 24">
-                    <rect width="24" height="24" fill="none" />
-                    <path fill="currentColor" fill-rule="evenodd"
-                      d="M11.47 4.72a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 0 1-1.06 1.06L12 6.31L8.78 9.53a.75.75 0 0 1-1.06-1.06zm-3.75 9.75a.75.75 0 0 1 1.06 0L12 17.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0l-3.75-3.75a.75.75 0 0 1 0-1.06"
-                      clip-rule="evenodd" />
-                  </svg>
+                  class="absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none p-1 rounded-full z-10 bg-[#4a4a4a] group-hover:bg-[#404040] transition duration-200 ease-in"
+                >
+                  <ChevronsUpDown
+                    class="size-4 text-white pointer-events-none"
+                  />
                 </span>
               </div>
             </section>
@@ -47,18 +62,25 @@
             <section class="group">
               <p class="mb-1 text-xs text-white/60 px-1">Minute</p>
               <div class="relative">
-                <select v-model="draftMinute"
-                  class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer">
-                  <option class="text-black" v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
+                <select
+                  v-model="draftMinute"
+                  class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer"
+                >
+                  <option
+                    class="text-black"
+                    v-for="m in minutes"
+                    :key="m"
+                    :value="m"
+                  >
+                    {{ m }}
+                  </option>
                 </select>
                 <span
-                  class="absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none p-1 rounded-full z-10 bg-[#4a4a4a] group-hover:bg-[#404040] transition duration-200 ease-in">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="!size-5 text-white" viewBox="0 0 24 24">
-                    <rect width="24" height="24" fill="none" />
-                    <path fill="currentColor" fill-rule="evenodd"
-                      d="M11.47 4.72a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 0 1-1.06 1.06L12 6.31L8.78 9.53a.75.75 0 0 1-1.06-1.06zm-3.75 9.75a.75.75 0 0 1 1.06 0L12 17.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0l-3.75-3.75a.75.75 0 0 1 0-1.06"
-                      clip-rule="evenodd" />
-                  </svg>
+                  class="absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none p-1 rounded-full z-10 bg-[#4a4a4a] group-hover:bg-[#404040] transition duration-200 ease-in"
+                >
+                  <ChevronsUpDown
+                    class="size-4 text-white pointer-events-none"
+                  />
                 </span>
               </div>
             </section>
@@ -66,31 +88,40 @@
             <section class="group">
               <p class="mb-1 text-xs text-white/60 px-1">Period</p>
               <div class="relative">
-                <select v-model="draftPeriod"
-                  class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer">
+                <select
+                  v-model="draftPeriod"
+                  class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer"
+                >
                   <option class="text-black" value="AM">AM</option>
                   <option class="text-black" value="PM">PM</option>
                 </select>
                 <span
-                  class="absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none p-1 rounded-full z-10 bg-[#4a4a4a] group-hover:bg-[#404040] transition duration-200 ease-in">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="!size-5 text-white" viewBox="0 0 24 24">
-                    <rect width="24" height="24" fill="none" />
-                    <path fill="currentColor" fill-rule="evenodd"
-                      d="M11.47 4.72a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 0 1-1.06 1.06L12 6.31L8.78 9.53a.75.75 0 0 1-1.06-1.06zm-3.75 9.75a.75.75 0 0 1 1.06 0L12 17.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0l-3.75-3.75a.75.75 0 0 1 0-1.06"
-                      clip-rule="evenodd" />
-                  </svg>
+                  class="absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none p-1 rounded-full z-10 bg-[#4a4a4a] group-hover:bg-[#404040] transition duration-200 ease-in"
+                >
+                  <ChevronsUpDown
+                    class="size-4 text-white pointer-events-none"
+                  />
                 </span>
               </div>
             </section>
           </div>
 
-          <div class="mt-3 flex items-center justify-end gap-2 border-t border-white/5 pt-3">
-            <button type="button" class=" text-sm px-4 py-2 rounded-full bg-white/10 hover:bg-white/15"
-              @click="open = false">
+          <div
+            class="mt-3 flex items-center justify-end gap-2 border-t border-white/5 pt-3"
+          >
+            <button
+              type="button"
+              class="text-sm px-4 py-2 rounded-full bg-white/10 hover:bg-white/15"
+              @click="open = false"
+            >
               Close
             </button>
-            <button type="button" class=" text-sm px-4 py-2 rounded-full bg-white text-black hover:opacity-90"
-              @click="applyAndClose">
+            <button
+              type="button"
+              class="text-sm px-4 py-2 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              @click="applyAndClose"
+              :disabled="!canApply"
+            >
               Apply
             </button>
           </div>
@@ -101,161 +132,178 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
+// import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
+import { Clock4, ChevronsUpDown } from "lucide-vue-next";
 
-const props = withDefaults(defineProps<{ name?: string; modelValue?: string }>(), {
-  name: "time",
-  modelValue: "",
-})
+const props = withDefaults(
+  defineProps<{ name?: string; modelValue?: string }>(),
+  {
+    name: "time",
+    modelValue: "",
+  },
+);
 
-const emit = defineEmits<{ (e: "update:modelValue", v: string): void }>()
+const emit = defineEmits<{ (e: "update:modelValue", v: string): void }>();
 
-const open = ref(false)
-const root = ref<HTMLElement | null>(null)
-const anchorBtn = ref<HTMLElement | null>(null)
-const panel = ref<HTMLElement | null>(null)
+const open = ref(false);
+const root = ref<HTMLElement | null>(null);
+const panel = ref<HTMLElement | null>(null);
 
-const hours = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"))
-const minutes = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"))
+const hours = Array.from({ length: 12 }, (_, i) =>
+  String(i + 1).padStart(2, "0"),
+);
+const minutes = Array.from({ length: 60 }, (_, i) =>
+  String(i).padStart(2, "0"),
+);
 
-type Period = "AM" | "PM" | "--"
+type Period = "AM" | "PM" | "--";
 
-const savedHour = ref("--")
-const savedMinute = ref("--")
-const savedPeriod = ref<Period>("--")
+const savedHour = ref("--");
+const savedMinute = ref("--");
+const savedPeriod = ref<Period>("--");
 
-const draftHour = ref("--")
-const draftMinute = ref("--")
-const draftPeriod = ref<Period>("--")
+const draftHour = ref("--");
+const draftMinute = ref("--");
+const draftPeriod = ref<Period>("--");
 
 function parseInitial(v: string) {
-  const match = v.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i)
-  if (!match) return
+  const match = v.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+  if (!match) return;
 
-  const hh = match[1] ?? "--"
-  const mm = match[2] ?? "--"
-  const apRaw = (match[3] ?? "--").toUpperCase()
-  const ap: Period = apRaw === "PM" ? "PM" : "AM"
+  const hh = match[1] ?? "--";
+  const mm = match[2] ?? "--";
+  const apRaw = (match[3] ?? "--").toUpperCase();
+  const ap: Period = apRaw === "PM" ? "PM" : "AM";
 
-  savedHour.value = String(hh).padStart(2, "0")
-  savedMinute.value = mm
-  savedPeriod.value = ap
+  savedHour.value = String(hh).padStart(2, "0");
+  savedMinute.value = mm;
+  savedPeriod.value = ap;
 
-  draftHour.value = savedHour.value
-  draftMinute.value = savedMinute.value
-  draftPeriod.value = savedPeriod.value
+  draftHour.value = savedHour.value;
+  draftMinute.value = savedMinute.value;
+  draftPeriod.value = savedPeriod.value;
 }
 
-parseInitial(props.modelValue)
+parseInitial(props.modelValue);
 
 watch(
   () => props.modelValue,
   (v) => {
-    if (v) parseInitial(v)
-  }
-)
+    if (v) parseInitial(v);
+  },
+);
 
-const display = computed(() => `${savedHour.value}:${savedMinute.value} ${savedPeriod.value}`)
-const value = computed(() => display.value)
+const display = computed(
+  () => `${savedHour.value}:${savedMinute.value} ${savedPeriod.value}`,
+);
+const value = computed(() => display.value);
 
 /** ---------- Smart positioning (top/bottom flip) ---------- */
-const panelPos = ref({ top: 0, left: 0 })
+const panelPos = ref({ top: 0, left: 0 });
 
 const panelStyle = computed(() => ({
   top: `${panelPos.value.top}px`,
   left: `${panelPos.value.left}px`,
-}))
+}));
 
 async function updatePanelPosition() {
-  await nextTick()
+  await nextTick();
 
-  const anchor = root.value // anchor to whole input container (recommended)
-  const elPanel = panel.value
-  if (!anchor || !elPanel) return
+  const anchor = root.value; // anchor to whole input container (recommended)
+  const elPanel = panel.value;
+  if (!anchor || !elPanel) return;
 
-  const r = anchor.getBoundingClientRect()
-  const panelRect = elPanel.getBoundingClientRect()
+  const r = anchor.getBoundingClientRect();
+  const panelRect = elPanel.getBoundingClientRect();
 
-  const gap = 8
-  const vw = window.innerWidth
-  const vh = window.innerHeight
+  const gap = 8;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
 
   // Align right edge of panel with right edge of anchor
-  let left = r.right - panelRect.width
-  left = Math.max(8, Math.min(left, vw - panelRect.width - 8))
+  let left = r.right - panelRect.width;
+  left = Math.max(8, Math.min(left, vw - panelRect.width - 8));
 
-  const spaceBelow = vh - r.bottom
-  const spaceAbove = r.top
+  const spaceBelow = vh - r.bottom;
+  const spaceAbove = r.top;
 
   // Prefer below, but flip if not enough space
-  let top: number
+  let top: number;
   if (spaceBelow >= panelRect.height + gap || spaceBelow >= spaceAbove) {
-    top = r.bottom + gap
+    top = r.bottom + gap;
   } else {
-    top = r.top - panelRect.height - gap
+    top = r.top - panelRect.height - gap;
   }
 
-  top = Math.max(8, Math.min(top, vh - panelRect.height - 8))
+  top = Math.max(8, Math.min(top, vh - panelRect.height - 8));
 
-  panelPos.value = { top, left }
+  panelPos.value = { top, left };
 }
 
 /** ---------- Open/close ---------- */
 async function toggle() {
   if (!open.value) {
     // reset draft from saved on open
-    draftHour.value = savedHour.value
-    draftMinute.value = savedMinute.value
-    draftPeriod.value = savedPeriod.value
-    open.value = true
-    await updatePanelPosition()
+    draftHour.value = savedHour.value;
+    draftMinute.value = savedMinute.value;
+    draftPeriod.value = savedPeriod.value;
+    open.value = true;
+    await updatePanelPosition();
   } else {
-    open.value = false
+    open.value = false;
   }
 }
 
 function applyAndClose() {
-  savedHour.value = draftHour.value
-  savedMinute.value = draftMinute.value
-  savedPeriod.value = draftPeriod.value
+  savedHour.value = draftHour.value;
+  savedMinute.value = draftMinute.value;
+  savedPeriod.value = draftPeriod.value;
 
-  emit("update:modelValue", display.value)
-  open.value = false
+  emit("update:modelValue", display.value);
+  open.value = false;
 }
 
 /** Close when clicking outside (works with Teleport) */
 function onDocClick(e: MouseEvent) {
-  if (!open.value) return
-  const t = e.target as Node
+  if (!open.value) return;
+  const t = e.target as Node;
   if (
     (root.value && root.value.contains(t)) ||
     (panel.value && panel.value.contains(t))
   ) {
-    return
+    return;
   }
-  open.value = false
+  open.value = false;
 }
 
+const canApply = computed(() => {
+  return (
+    draftHour.value !== "--" &&
+    draftMinute.value !== "--" &&
+    draftPeriod.value !== "--"
+  );
+});
+
 function onViewportChange() {
-  if (!open.value) return
-  updatePanelPosition()
+  if (!open.value) return;
+  updatePanelPosition();
 }
 
 onMounted(() => {
-  document.addEventListener("mousedown", onDocClick)
-  window.addEventListener("resize", onViewportChange)
+  document.addEventListener("mousedown", onDocClick);
+  window.addEventListener("resize", onViewportChange);
   // capture scroll from any container
-  window.addEventListener("scroll", onViewportChange, true)
-})
+  window.addEventListener("scroll", onViewportChange, true);
+});
 
 onBeforeUnmount(() => {
-  document.removeEventListener("mousedown", onDocClick)
-  window.removeEventListener("resize", onViewportChange)
-  window.removeEventListener("scroll", onViewportChange, true)
-})
+  document.removeEventListener("mousedown", onDocClick);
+  window.removeEventListener("resize", onViewportChange);
+  window.removeEventListener("scroll", onViewportChange, true);
+});
 
 // If panel content size changes (fonts, etc), re-position
 watch(open, (v) => {
-  if (v) updatePanelPosition()
-})
+  if (v) updatePanelPosition();
+});
 </script>

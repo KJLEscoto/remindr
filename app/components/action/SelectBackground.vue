@@ -1,9 +1,16 @@
 <template>
-  <button @click="openPicker"
-    class="w-12 h-12 rounded-full border border-white/30 hover:border-white/50 transition duration-200 ease-in cursor-pointer overflow-hidden">
+  <button
+    @click="openPicker"
+    class="w-12 h-12 rounded-full border border-white/30 hover:border-white/50 transition duration-200 ease-in cursor-pointer overflow-hidden"
+  >
     <span v-if="savedThumbSrc">
-      <img class="h-full w-full object-cover" :src="savedThumbSrc" :alt="savedBg.label" loading="lazy"
-        draggable="false" />
+      <img
+        class="h-full w-full object-cover"
+        :src="savedThumbSrc"
+        :alt="savedBg.label"
+        loading="lazy"
+        draggable="false"
+      />
     </span>
 
     <!-- fallback or loading -->
@@ -12,8 +19,14 @@
     </span>
   </button>
 
-  <BaseDrawer :closable="false" v-model="open" side="bottom" :draggable="true" size="full"
-    @update:modelValue="onDrawerToggle">
+  <BaseDrawer
+    :closable="false"
+    v-model="open"
+    side="bottom"
+    :draggable="true"
+    size="full"
+    @update:modelValue="onDrawerToggle"
+  >
     <div class="w-1/3 mx-auto space-y-6">
       <section class="space-y-2 text-center">
         <h1 class="text-white text-4xl font-instrument">Current Background</h1>
@@ -21,40 +34,76 @@
         <!-- preview shows DRAFT -->
         <div class="relative rounded-3xl overflow-hidden aspect-video">
           <!-- skeleton -->
-          <div v-show="previewLoading" class="absolute inset-0 rounded-3xl bg-white/10 animate-pulse" />
+          <div
+            v-show="previewLoading"
+            class="absolute inset-0 rounded-3xl bg-white/10 animate-pulse"
+          />
 
           <!-- show text only when draft != saved -->
-          <p v-if="isPreviewing"
-            class="absolute inset-0 flex items-center justify-center text-white mix-blend-difference">
+          <p
+            v-if="isPreviewing"
+            class="absolute inset-0 flex items-center justify-center text-white mix-blend-difference"
+          >
             Background Preview
           </p>
 
-          <video class="h-full w-full object-cover rounded-3xl" :src="draftBg.src" autoplay muted loop playsinline
-            @loadstart="previewLoading = true" @loadeddata="previewLoading = false" @canplay="previewLoading = false" />
+          <video
+            class="h-full w-full object-cover rounded-3xl"
+            :src="draftBg.src"
+            autoplay
+            muted
+            loop
+            playsinline
+            @loadstart="previewLoading = true"
+            @loadeddata="previewLoading = false"
+            @canplay="previewLoading = false"
+          />
         </div>
       </section>
 
-      <form class="flex flex-col gap-4 items-center justify-center" @submit.prevent="applyBackground">
+      <form
+        class="flex flex-col gap-4 items-center justify-center"
+        @submit.prevent="applyBackground"
+      >
         <p class="text-white/70 font-light">Select below</p>
 
         <!-- thumbnails (PNG) -->
         <div class="flex items-center gap-4 overflow-x-auto pb-1">
           <div v-for="bg in backgrounds" :key="bg.key">
-            <button type="button" data-drawer-no-drag
+            <button
+              type="button"
+              data-drawer-no-drag
               class="h-20 w-20 rounded-full overflow-hidden border-2 transition duration-200 ease-in flex-none"
-              :class="draftKey === bg.key ? 'border-white' : 'border-white/20 hover:border-white/40'"
-              @click="preview(bg)">
-              <img :src="bg.thumbSrc" :alt="bg.label" class="h-full w-full object-cover" loading="lazy"
-                draggable="false" />
+              :class="
+                draftKey === bg.key
+                  ? 'border-white'
+                  : 'border-white/20 hover:border-white/40'
+              "
+              @click="preview(bg)"
+            >
+              <img
+                :src="bg.thumbSrc"
+                :alt="bg.label"
+                class="h-full w-full object-cover"
+                loading="lazy"
+                draggable="false"
+              />
             </button>
             <!-- label -->
-            <div class="text-center text-xs font-light text-white w-full p-2 pointer-events-none text-nowrap">
+            <div
+              class="text-center text-xs font-light text-white w-full p-2 pointer-events-none text-nowrap"
+            >
               {{ bg.label }}
             </div>
           </div>
         </div>
 
-        <button class="w-full py-3 rounded-full bg-white text-black hover:opacity-90">
+        <button
+          data-drawer-no-drag
+          type="submit"
+          :disabled="!canApplyBackground"
+          class="w-full py-3 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           Set Background
         </button>
       </form>
@@ -63,80 +112,109 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from "~/lib/toast";
+
 type BgManifestItem = {
-  key: string
-  label: string
-  videoSrc: string
-  thumbSrc: string
-}
+  key: string;
+  label: string;
+  videoSrc: string;
+  thumbSrc: string;
+};
 
 // what your background cookie expects
-type BackgroundItem = { label: string; src: string }
+type BackgroundItem = { label: string; src: string };
 
-const open = ref(false)
-const previewLoading = ref(true)
+const open = ref(false);
+const previewLoading = ref(true);
 
-const backgrounds = ref<BgManifestItem[]>([])
+const backgrounds = ref<BgManifestItem[]>([]);
 
 onMounted(async () => {
-  backgrounds.value = await $fetch<BgManifestItem[]>("/backgrounds.json")
-})
+  backgrounds.value = await $fetch<BgManifestItem[]>("/backgrounds.json");
+});
 
-const { $background } = useNuxtApp()
+const { $background } = useNuxtApp();
 
 // saved (cookie-backed)
-const savedBg = computed<BackgroundItem>(() => $background.current.value)
+const savedBg = computed<BackgroundItem>(() => $background.current.value);
 
 const savedThumbSrc = computed(() => {
   const match =
     backgrounds.value.find((b) => b.videoSrc === savedBg.value.src) ??
-    backgrounds.value.find((b) => b.videoSrc === $background.DEFAULT_BG.src)
+    backgrounds.value.find((b) => b.videoSrc === $background.DEFAULT_BG.src);
 
-  return match?.thumbSrc // may be undefined while backgrounds.json is still loading
-})
+  return match?.thumbSrc; // may be undefined while backgrounds.json is still loading
+});
 
 // draft (preview only)
-const draftBg = ref<BackgroundItem>($background.current.value)
-const draftKey = ref<string>("")
+const draftBg = ref<BackgroundItem>($background.current.value);
+const draftKey = ref<string>("");
 
-const isPreviewing = computed(() => draftBg.value.src !== savedBg.value.src)
+const isPreviewing = computed(() => draftBg.value.src !== savedBg.value.src);
 
 function syncDraftToSaved() {
-  draftBg.value = savedBg.value
+  draftBg.value = savedBg.value;
 
   // try to find matching key in manifest by video src
-  const match = backgrounds.value.find((b) => b.videoSrc === savedBg.value.src)
-  draftKey.value = match?.key ?? ""
+  const match = backgrounds.value.find((b) => b.videoSrc === savedBg.value.src);
+  draftKey.value = match?.key ?? "";
 }
 
 function openPicker() {
-  syncDraftToSaved()
-  open.value = true
+  syncDraftToSaved();
+  open.value = true;
 }
 
 function preview(bg: BgManifestItem) {
   // update preview only (video)
-  draftBg.value = { label: bg.label, src: bg.videoSrc }
-  draftKey.value = bg.key
+  draftBg.value = { label: bg.label, src: bg.videoSrc };
+  draftKey.value = bg.key;
 }
 
-function applyBackground() {
-  // commit to cookie
-  $background.replace(draftBg.value)
-  open.value = false
+async function applyBackground() {
+  if (!canApplyBackground.value) return;
+
+  try {
+    // in case replace() ever becomes async or throws
+    await Promise.resolve($background.replace(draftBg.value));
+
+    const label = $background.current.value.label || "Background";
+    toast.success("Background changed!", {
+      description: `${label} is now the theme.`,
+      duration: 0,
+      sound: "success",
+      closable: false
+    });
+
+    open.value = false;
+  } catch (e) {
+    console.error(e);
+
+    toast.error("Error occurred", {
+      description: "Failed to set background. Please try again.",
+      duration: 0,
+      sound: "error",
+      closable: false
+    });
+  }
 }
+
+const canApplyBackground = computed(() => {
+  // disable if nothing selected OR same as current
+  return !!draftBg.value?.src && draftBg.value.src !== savedBg.value.src;
+});
 
 // drawer open/close
 function onDrawerToggle(v: boolean) {
-  if (!v) syncDraftToSaved() // closing without apply -> revert
-  open.value = v
+  if (!v) syncDraftToSaved(); // closing without apply -> revert
+  open.value = v;
 }
 
 // re-show skeleton whenever src changes
 watch(
   () => draftBg.value.src,
   () => {
-    previewLoading.value = true
-  }
-)
+    previewLoading.value = true;
+  },
+);
 </script>

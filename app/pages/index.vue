@@ -9,7 +9,9 @@
       loop
     />
 
-    <div class="relative z-20 h-full w-full flex items-center justify-center">
+    <div
+      class="relative z-20 h-full w-full flex flex-col gap-5 items-center justify-center"
+    >
       <div class="rounded-[3rem] h-fit w-1/3 bg-glass p-6 flex flex-col gap-10">
         <!-- Actions -->
         <section class="flex items-center justify-between w-full">
@@ -38,11 +40,26 @@
           :date="date"
           :reminders="reminders"
           :remainingMap="remainingMap"
+          :currentTime="currentTime"
+          @trigger="handleTrigger"
         />
 
-        <button @click="showSuccess">success</button>
-        <button @click="showError">error</button>
+        <!-- <button @click="showSuccess">success</button>
+        <button @click="showError">error</button> -->
       </div>
+    </div>
+    <div
+      class="text-center w-full text-xs text-white/20 mix-blend-difference absolute bottom-5 z-40"
+    >
+      Powered by
+      <a
+        href="https://kinwebb.netlify.app/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-white/50 hover:underline hover:text-white/60 ease-in transition-all duration-200"
+      >
+        KinWebb
+      </a>
     </div>
   </main>
 </template>
@@ -50,46 +67,35 @@
 <script setup lang="ts">
 import { toast } from "~/lib/toast";
 
-function showSuccess() {
-  // toast.success("Saved!", {
-  //   description: "Your changes were stored successfully.",
-  //   actions: [
-  //     {
-  //       label: "Undo",
-  //       variant: "secondary",
-  //       onClick: () => console.log("undo"),
-  //     },
-  //   ],
-  //   duration: 0,
-  // });
-
-  // toast.success("SUCCESS", {
-  //   description: "Please check your card and try again.",
-  //   duration: 0,
-  // });
-
-  const id = toast.loading("Uploading...", {
-    description: "This may take a few seconds.",
-    closable: false,
-  });
-
-  setTimeout(() => {
-    // finish loading -> show success, dismiss old
-    import("~/lib/toast").then(({ dismiss }) => dismiss(id));
-    toast.success("Uploaded!", { description: "Your file is ready." });
-  }, 1500);
+function capitalizeWords(str: string) {
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/\b\p{L}/gu, (c) => c.toUpperCase()); // supports unicode letters
 }
 
-function showError() {
-  toast.error("ERROR", {
-    description: "Please check your card and try again.",
+function handleTrigger(id: string) {
+  const item = reminders.value.find((r) => r.id === id);
+  if (!item) return;
+
+  $reminders.remove(id);
+
+  toast.alarm(`${item.time}`, {
+    description: `${capitalizeWords(item.label)}`,
     duration: 0,
+    sound: "alarm",
+    soundLoop: true,
+    closable: false
   });
 }
 
 const time = useCurrentTime();
 const { date } = useCurrentDate();
 const { remaining } = useReminderCountdown(time);
+
+const currentTime = computed(
+  () => `${time.hour.value}:${time.minute.value} ${time.period.value}`,
+);
 
 const { $background } = useNuxtApp();
 
