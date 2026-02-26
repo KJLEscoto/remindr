@@ -1,9 +1,17 @@
 <template>
   <main class="h-screen w-full relative">
     <!-- background video -->
-    <video class="absolute inset-0 h-full w-full object-cover" :src="savedBg.src" autoplay muted loop />
+    <video
+      class="absolute inset-0 h-full w-full object-cover"
+      :src="savedBg.src"
+      autoplay
+      muted
+      loop
+    />
 
-    <div class="relative z-20 h-full w-full flex items-center justify-center">
+    <div
+      class="relative z-20 h-full w-full flex flex-col gap-5 items-center justify-center"
+    >
       <div class="rounded-[3rem] h-fit w-1/3 bg-glass p-6 flex flex-col gap-10">
         <!-- Actions -->
         <section class="flex items-center justify-between w-full">
@@ -11,8 +19,11 @@
             <ActionSetReminder />
 
             <Transition name="pop">
-              <ActionMarkAsDone v-if="activeIndex > 0 && currentReminder" :reminder-id="currentReminder.id"
-                @done="afterDone" />
+              <ActionMarkAsDone
+                v-if="activeIndex > 0 && currentReminder"
+                :reminder-id="currentReminder.id"
+                @done="afterDone"
+              />
             </Transition>
           </div>
 
@@ -20,54 +31,108 @@
         </section>
 
         <!-- Carousel -->
-        <ReminderCarousel v-model:activeIndex="activeIndex" :hour="hour" :minute="minute" :second="second"
-          :period="period" :date="date" :reminders="reminders" :remainingMap="remainingMap" />
+        <ReminderCarousel
+          v-model:activeIndex="activeIndex"
+          :hour="hour"
+          :minute="minute"
+          :second="second"
+          :period="period"
+          :date="date"
+          :reminders="reminders"
+          :remainingMap="remainingMap"
+          :currentTime="currentTime"
+          @trigger="handleTrigger"
+        />
+
+        <!-- <button @click="showSuccess">success</button>
+        <button @click="showError">error</button> -->
       </div>
+    </div>
+    <div
+      class="text-center w-full text-xs text-white/20 mix-blend-difference absolute bottom-5 z-40"
+    >
+      Powered by
+      <a
+        href="https://kinwebb.netlify.app/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-white/50 hover:underline hover:text-white/60 ease-in transition-all duration-200"
+      >
+        KinWebb
+      </a>
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
-const time = useCurrentTime()
-const { date } = useCurrentDate()
-const { remaining } = useReminderCountdown(time)
+import { toast } from "~/lib/toast";
 
-const { $background } = useNuxtApp()
+function capitalizeWords(str: string) {
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/\b\p{L}/gu, (c) => c.toUpperCase()); // supports unicode letters
+}
+
+function handleTrigger(id: string) {
+  const item = reminders.value.find((r) => r.id === id);
+  if (!item) return;
+
+  $reminders.remove(id);
+
+  toast.alarm(`${item.time}`, {
+    description: `${capitalizeWords(item.label)}`,
+    duration: 0,
+    sound: "alarm",
+    soundLoop: true,
+    closable: false
+  });
+}
+
+const time = useCurrentTime();
+const { date } = useCurrentDate();
+const { remaining } = useReminderCountdown(time);
+
+const currentTime = computed(
+  () => `${time.hour.value}:${time.minute.value} ${time.period.value}`,
+);
+
+const { $background } = useNuxtApp();
 
 // ✅ saved (cookie-backed)
-const savedBg = computed(() => $background.current.value)
+const savedBg = computed(() => $background.current.value);
 
-const { $reminders } = useNuxtApp()
-const reminders = computed(() => $reminders.list.value ?? [])
+const { $reminders } = useNuxtApp();
+const reminders = computed(() => $reminders.list.value ?? []);
 
 const remainingMap = computed(() => {
-  const map = new Map<string, ReturnType<typeof remaining>>()
-  for (const item of reminders.value) map.set(item.id, remaining(item.time))
-  return map
-})
+  const map = new Map<string, ReturnType<typeof remaining>>();
+  for (const item of reminders.value) map.set(item.id, remaining(item.time));
+  return map;
+});
 
-const activeIndex = ref(0)
+const activeIndex = ref(0);
 
 const currentReminder = computed(() => {
-  if (activeIndex.value <= 0) return null
-  return reminders.value[activeIndex.value - 1] ?? null
-})
+  if (activeIndex.value <= 0) return null;
+  return reminders.value[activeIndex.value - 1] ?? null;
+});
 
 function afterDone() {
   // If no reminders left, return to time slide
   if (reminders.value.length === 0) {
-    activeIndex.value = 0
-    return
+    activeIndex.value = 0;
+    return;
   }
 
   // Keep index within bounds (time slide + reminder slides)
-  const max = reminders.value.length
-  if (activeIndex.value > max) activeIndex.value = max
+  const max = reminders.value.length;
+  if (activeIndex.value > max) activeIndex.value = max;
 }
 
 // expose time pieces
-const hour = computed(() => time.hour.value)
-const minute = computed(() => time.minute.value)
-const second = computed(() => time.second.value)
-const period = computed(() => time.period.value)
+const hour = computed(() => time.hour.value);
+const minute = computed(() => time.minute.value);
+const second = computed(() => time.second.value);
+const period = computed(() => time.period.value);
 </script>

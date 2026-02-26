@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-        "bg:manifest": "node scripts/generate-background-manifest.mjs",
+    "bg:manifest": "node scripts/generate-background-manifest.mjs",
     "dev": "npm run bg:manifest && nuxt dev",
     "build": "npm run bg:manifest && nuxt build",
     "generate": "nuxt generate",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@nuxt/fonts": "^0.14.0",
     "@nuxtjs/tailwindcss": "^6.14.0",
+    "lucide-vue-next": "^0.575.0",
     "nuxt": "^4.3.1",
     "vue": "^3.5.28",
     "vue-router": "^4.6.4"

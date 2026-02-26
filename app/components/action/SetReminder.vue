@@ -1,28 +1,47 @@
 <template>
-  <button @click="open = true"
-    class="bg-black px-5 py-3 rounded-full border border-white/10 hover:border-white/50 transition duration-200 ease-in cursor-pointer flex items-center gap-1">
-    <svg xmlns="http://www.w3.org/2000/svg" class="!size-5" width="24" height="24" viewBox="0 0 24 24">
-      <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-        d="M12 5v14m-7-7h14" />
-    </svg>
+  <button
+    type="button"
+    @click="open = true"
+    class="bg-black px-5 py-3 rounded-full border border-white/10 hover:border-white/50 transition duration-200 ease-in cursor-pointer flex items-center gap-1"
+  >
+    <Plus class="size-5" />
     <p class="text-sm">set reminder</p>
   </button>
 
-  <BaseDrawer :closable="false" v-model="open" side="bottom" :draggable="true" size="full">
+  <BaseDrawer
+    v-model="open"
+    :closable="false"
+    side="bottom"
+    :draggable="true"
+    size="full"
+  >
     <div class="w-1/3 mx-auto space-y-6">
       <section class="space-y-2 text-center">
-        <h1 class="text-white text-4xl font-instrument">What should I remind you about today?</h1>
+        <h1 class="text-white text-4xl font-instrument">
+          What should I remind you about today?
+        </h1>
         <p class="text-white/70 font-light">A gentle ping when it’s time.</p>
       </section>
 
       <form class="space-y-3" @submit.prevent="saveReminder">
-        <input v-model.trim="label"
-          class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light" name="label" type="text"
-          id="label" placeholder="Remind me of..." />
+        <input
+          v-model.trim="label"
+          class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light text-white"
+          name="label"
+          type="text"
+          id="label"
+          placeholder="Remind me of..."
+          autocomplete="off"
+        />
 
         <TimePicker v-model="time" name="time" />
 
-        <button class="w-full py-3 rounded-full bg-white text-black hover:opacity-90">
+        <button
+          data-drawer-no-drag
+          type="submit"
+          class="w-full py-3 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="!canSubmit"
+        >
           Set Reminder
         </button>
       </form>
@@ -31,25 +50,65 @@
 </template>
 
 <script setup lang="ts">
-const open = ref(false)
-const label = ref("")
-const time = ref("")
+import { ref, computed } from "vue";
+import { toast } from "~/lib/toast";
+import { Plus } from "lucide-vue-next";
 
-const { $reminders } = useNuxtApp()
+const open = ref(false);
+const label = ref("");
+const time = ref("");
+
+const { $reminders } = useNuxtApp();
+
+const canSubmit = computed(
+  () => Boolean(label.value?.trim()) && Boolean(time.value),
+);
+
+function capitalizeWords(str: string) {
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/\b\p{L}/gu, (c) => c.toUpperCase()); // supports unicode letters
+}
+
+function showSuccess(savedLabel: string, savedTime: string) {
+  toast.set("Reminder set!", {
+    description: `${capitalizeWords(savedLabel)} • ${savedTime}`,
+    duration: 0,
+    sound: "success",
+  });
+}
+
+function showRequireField() {
+  toast.warning("Required fields!", {
+    description: "Label and time are required.",
+    duration: 0,
+    sound: "error",
+    closable: false
+  });
+}
+
+function resetAndClose() {
+  label.value = "";
+  time.value = "";
+  open.value = false;
+}
 
 function saveReminder() {
-  if (!label.value) return
-  if (!time.value) return
+  const trimmed = label.value.trim();
+
+  if (!trimmed || !time.value) {
+    showRequireField();
+    return; // ✅ IMPORTANT: stop here
+  }
 
   // uses plugin add()
   $reminders.add({
-    label: label.value,
+    label: trimmed,
     time: time.value,
-  })
+  });
 
-  // reset + close
-  label.value = ""
-  time.value = ""
-  open.value = false
+  showSuccess(trimmed, time.value);
+  resetAndClose();
 }
 </script>
