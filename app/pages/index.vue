@@ -1,17 +1,9 @@
 <template>
   <main class="h-screen w-full relative">
     <!-- background video -->
-    <video
-      class="absolute inset-0 h-full w-full object-cover"
-      :src="savedBg.src"
-      autoplay
-      muted
-      loop
-    />
+    <video class="absolute inset-0 h-full w-full object-cover" :src="savedBg.src" autoplay muted loop />
 
-    <div
-      class="relative z-20 h-full w-full flex flex-col gap-5 items-center justify-center"
-    >
+    <div class="relative z-20 h-full w-full flex flex-col gap-5 items-center justify-center">
       <div class="rounded-[3rem] h-fit w-1/3 bg-glass p-6 flex flex-col gap-10">
         <!-- Actions -->
         <section class="flex items-center justify-between w-full">
@@ -19,11 +11,8 @@
             <ActionSetReminder />
 
             <Transition name="pop">
-              <ActionMarkAsDone
-                v-if="activeIndex > 0 && currentReminder"
-                :reminder-id="currentReminder.id"
-                @done="afterDone"
-              />
+              <ActionMarkAsDone v-if="activeIndex > 0 && currentReminder" :reminder-id="currentReminder.id"
+                @done="afterDone" />
             </Transition>
           </div>
 
@@ -31,48 +20,26 @@
         </section>
 
         <!-- Carousel -->
-        <ReminderCarousel
-          v-model:activeIndex="activeIndex"
-          :hour="hour"
-          :minute="minute"
-          :second="second"
-          :period="period"
-          :date="date"
-          :reminders="reminders"
-          :remainingMap="remainingMap"
-          :currentTime="currentTime"
-          @trigger="handleTrigger"
-        />
+        <ReminderCarousel v-model:activeIndex="activeIndex" :hour="hour" :minute="minute" :second="second"
+          :period="period" :date="date" :reminders="reminders" :remainingMap="remainingMap" :currentTime="currentTime"
+          @trigger="handleTrigger" />
 
-        <!-- <button @click="showSuccess">success</button>
-        <button @click="showError">error</button> -->
       </div>
     </div>
-    <div
-      class="text-center w-full text-xs text-white/20 mix-blend-difference absolute bottom-5 z-40"
-    >
+    <div class="text-center w-full text-xs text-white/20 mix-blend-difference absolute bottom-5 z-40">
       Powered by
-      <a
-        href="https://kinwebb.netlify.app/"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-white/50 hover:underline hover:text-white/60 ease-in transition-all duration-200"
-      >
+      <a href="https://kinwebb.netlify.app/" target="_blank" rel="noopener noreferrer"
+        class="text-white/50 hover:underline hover:text-white/60 ease-in transition-all duration-200">
         KinWebb
       </a>
+      <!-- |
+      Share your feedback here. -->
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
 import { toast } from "~/lib/toast";
-
-function capitalizeWords(str: string) {
-  return str
-    .trim()
-    .toLowerCase()
-    .replace(/\b\p{L}/gu, (c) => c.toUpperCase()); // supports unicode letters
-}
 
 function handleTrigger(id: string) {
   const item = reminders.value.find((r) => r.id === id);
@@ -81,7 +48,7 @@ function handleTrigger(id: string) {
   $reminders.remove(id);
 
   toast.alarm(`${item.time}`, {
-    description: `${capitalizeWords(item.label)}`,
+    description: `${useCapitalizeWords(item.label)}`,
     duration: 0,
     sound: "alarm",
     soundLoop: true,

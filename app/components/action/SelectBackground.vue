@@ -1,16 +1,9 @@
 <template>
-  <button
-    @click="openPicker"
-    class="w-12 h-12 rounded-full border border-white/30 hover:border-white/50 transition duration-200 ease-in cursor-pointer overflow-hidden"
-  >
+  <button @click="openPicker"
+    class="w-12 h-12 rounded-full border border-white/30 hover:border-white/50 transition duration-200 ease-in cursor-pointer overflow-hidden">
     <span v-if="savedThumbSrc">
-      <img
-        class="h-full w-full object-cover"
-        :src="savedThumbSrc"
-        :alt="savedBg.label"
-        loading="lazy"
-        draggable="false"
-      />
+      <img class="h-full w-full object-cover" :src="savedThumbSrc" :alt="savedBg.label" loading="lazy"
+        draggable="false" />
     </span>
 
     <!-- fallback or loading -->
@@ -19,14 +12,8 @@
     </span>
   </button>
 
-  <BaseDrawer
-    :closable="false"
-    v-model="open"
-    side="bottom"
-    :draggable="true"
-    size="full"
-    @update:modelValue="onDrawerToggle"
-  >
+  <BaseDrawer :closable="false" v-model="open" side="bottom" :draggable="true" size="full"
+    @update:modelValue="onDrawerToggle">
     <div class="w-1/3 mx-auto space-y-6">
       <section class="space-y-2 text-center">
         <h1 class="text-white text-4xl font-instrument">Current Background</h1>
@@ -34,76 +21,42 @@
         <!-- preview shows DRAFT -->
         <div class="relative rounded-3xl overflow-hidden aspect-video">
           <!-- skeleton -->
-          <div
-            v-show="previewLoading"
-            class="absolute inset-0 rounded-3xl bg-white/10 animate-pulse"
-          />
+          <div v-show="previewLoading" class="absolute inset-0 rounded-3xl bg-white/10 animate-pulse" />
 
           <!-- show text only when draft != saved -->
-          <p
-            v-if="isPreviewing"
-            class="absolute inset-0 flex items-center justify-center text-white mix-blend-difference"
-          >
+          <p v-if="isPreviewing"
+            class="absolute inset-0 flex items-center justify-center text-white mix-blend-difference">
             Background Preview
           </p>
 
-          <video
-            class="h-full w-full object-cover rounded-3xl"
-            :src="draftBg.src"
-            autoplay
-            muted
-            loop
-            playsinline
-            @loadstart="previewLoading = true"
-            @loadeddata="previewLoading = false"
-            @canplay="previewLoading = false"
-          />
+          <video class="h-full w-full object-cover rounded-3xl" :src="draftBg.src" autoplay muted loop playsinline
+            @loadstart="previewLoading = true" @loadeddata="previewLoading = false" @canplay="previewLoading = false" />
         </div>
       </section>
 
-      <form
-        class="flex flex-col gap-4 items-center justify-center"
-        @submit.prevent="applyBackground"
-      >
+      <form class="flex flex-col gap-4 items-center justify-center" @submit.prevent="applyBackground">
         <p class="text-white/70 font-light">Select below</p>
 
         <!-- thumbnails (PNG) -->
         <div class="flex items-center gap-4 overflow-x-auto pb-1">
           <div v-for="bg in backgrounds" :key="bg.key">
-            <button
-              type="button"
-              data-drawer-no-drag
-              class="h-20 w-20 rounded-full overflow-hidden border-2 transition duration-200 ease-in flex-none"
-              :class="
-                draftKey === bg.key
-                  ? 'border-white'
-                  : 'border-white/20 hover:border-white/40'
-              "
-              @click="preview(bg)"
-            >
-              <img
-                :src="bg.thumbSrc"
-                :alt="bg.label"
-                class="h-full w-full object-cover"
-                loading="lazy"
-                draggable="false"
-              />
+            <button type="button" data-drawer-no-drag
+              class="h-20 w-20 rounded-full overflow-hidden border-2 transition duration-200 ease-in flex-none" :class="draftKey === bg.key
+                ? 'border-white'
+                : 'border-white/20 hover:border-white/40'
+                " @click="preview(bg)">
+              <img :src="bg.thumbSrc" :alt="bg.label" class="h-full w-full object-cover" loading="lazy"
+                draggable="false" />
             </button>
             <!-- label -->
-            <div
-              class="text-center text-xs font-light text-white w-full p-2 pointer-events-none text-nowrap"
-            >
+            <div class="text-center text-xs font-light text-white w-full p-2 pointer-events-none text-nowrap">
               {{ bg.label }}
             </div>
           </div>
         </div>
 
-        <button
-          data-drawer-no-drag
-          type="submit"
-          :disabled="!canApplyBackground"
-          class="w-full py-3 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button data-drawer-no-drag type="submit" :disabled="!canApplyBackground"
+          class="w-full py-3 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed">
           Set Background
         </button>
       </form>

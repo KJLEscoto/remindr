@@ -1,23 +1,11 @@
 <template>
-  <div
-    ref="cardEl"
+  <div ref="cardEl"
     class="pointer-events-auto toast-card relative w-full rounded-3xl bg-glass shadow-[0_18px_55px_rgba(0,0,0,0.45)]"
-    :class="{ 'is-closing': closing }"
-    :style="[cardStyle, glassVars]"
-    role="status"
-    aria-live="polite"
-    @pointerdown="onPointerDown"
-    @pointermove="onPointerMove"
-    @pointerup="onPointerUp"
-    @pointercancel="onPointerUp"
-  >
+    :class="{ 'is-closing': closing }" :style="[cardStyle, glassVars]" role="status" aria-live="polite"
+    @pointerdown="onPointerDown" @pointermove="onPointerMove" @pointerup="onPointerUp" @pointercancel="onPointerUp">
     <div class="flex gap-3 p-4">
       <div class="mt-0.5 shrink-0">
-        <component
-          :is="icon"
-          class="h-5 w-5 text-white"
-          :class="toast.variant === 'loading' ? 'animate-spin' : ''"
-        />
+        <component :is="icon" class="h-5 w-5 text-white" :class="toast.variant === 'loading' ? 'animate-spin' : ''" />
       </div>
 
       <div class="min-w-0 flex-1">
@@ -30,27 +18,24 @@
         </div>
 
         <div v-if="toast.actions?.length" class="mt-3 flex flex-wrap gap-2">
-          <button
-            v-for="(a, i) in toast.actions"
-            :key="i"
-            type="button"
-            class="rounded-lg px-3 py-1.5 text-sm font-medium transition"
-            :class="actionClass(a.variant)"
-            @click="onAction(a)"
-          >
+          <button v-for="(a, i) in toast.actions" :key="i" type="button"
+            class="rounded-lg px-3 py-1.5 text-sm font-medium transition" :class="actionClass(a.variant)"
+            @click="onAction(a)">
             {{ a.label }}
           </button>
         </div>
       </div>
 
-      <button
-        v-if="toast.closable !== false"
-        type="button"
-        class="ml-2 rounded-lg p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
-        aria-label="Dismiss"
-        @click="requestClose()"
-      >
-        <X class="size-5" />
+      <button v-if="toast.closable !== false" type="button"
+        class="ml-2 rounded-lg p-2 text-white/70 transition hover:bg-white/10 hover:text-white" aria-label="Dismiss"
+        data-no-drag @pointerdown.stop.prevent @mousedown.stop.prevent @click.stop="requestClose()">
+        <X class="size-5 pointer-events-none" />
+      </button>
+
+      <button v-if="toast.variant === 'alarm'" type="button"
+        class="ml-2 rounded-lg p-2 text-white/70 transition hover:bg-green-500/30 hover:text-white" aria-label="Dismiss"
+        data-no-drag @pointerdown.stop.prevent @mousedown.stop.prevent @click.stop="requestAlarmDone()">
+        <Check class="size-5 pointer-events-none" />
       </button>
     </div>
   </div>
@@ -58,9 +43,10 @@
 
 <script setup lang="ts">
 import { computed, ref, onBeforeUnmount } from "vue";
-import type { ToastAction, ToastItem } from "~/lib/toast";
+import { toast as toastApi, type ToastAction, type ToastItem } from "~/lib/toast";
 import {
   CheckCircle2,
+  Check,
   AlertTriangle,
   Info,
   ClockCheck,
@@ -133,11 +119,33 @@ const CLOSE_MS = 240;
 const cardEl = ref<HTMLElement | null>(null);
 const exit = ref<{ x: number; y: number } | null>(null);
 
-function requestClose(exitVec?: { x: number; y: number }) {
+function requestClose(
+  exitVec?: { x: number; y: number },
+  afterClose?: () => void
+) {
   if (closing.value) return;
   closing.value = true;
   exit.value = exitVec ?? { x: 0, y: -14 };
-  window.setTimeout(() => emit("dismiss"), CLOSE_MS);
+
+  window.setTimeout(() => {
+    emit("dismiss");
+    afterClose?.();
+  }, CLOSE_MS);
+}
+
+function requestAlarmDone(exitVec?: { x: number; y: number }) {
+  // close current toast first (animation)
+  requestClose(exitVec, () => {
+    const label = props.toast.description || props.toast.label || "Reminder";
+    const time = props.toast.label || "";
+
+    toastApi.complete("Reminder completed!", {
+      description: `${useCapitalizeWords(label)}${time ? ` • ${time}` : ""}`,
+      duration: 0,
+      sound: "success",
+      closable: false,
+    });
+  });
 }
 
 /* Swipe */
@@ -177,6 +185,12 @@ const cardStyle = computed(() => {
 function onPointerDown(e: PointerEvent) {
   if (closing.value) return;
   if (e.pointerType === "mouse" && e.button !== 0) return;
+
+  // ✅ don't start swipe from interactive elements
+  const target = e.target as HTMLElement | null;
+  if (target?.closest("button, a, input, textarea, select, [data-no-drag]")) {
+    return;
+  }
 
   const el = e.currentTarget as HTMLElement;
   el.setPointerCapture(e.pointerId);

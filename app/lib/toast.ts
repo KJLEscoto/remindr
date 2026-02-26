@@ -43,6 +43,7 @@ export type ToastItem = {
   // ✅ prevents replay (even if component remounts / becomes visible again)
   soundPlayed?: boolean;
   soundLoop?: boolean;
+  done?: boolean;
 };
 
 type ToastOptions = Partial<
@@ -82,23 +83,6 @@ export function dismiss(id: string) {
 function scheduleAutoDismiss(item: ToastItem) {
   if (item.duration <= 0) return;
   window.setTimeout(() => dismiss(item.id), item.duration);
-}
-
-function playToastSoundOnce(item: ToastItem) {
-  if (!import.meta.client) return;
-  if (!item.sound) return;
-  if (item.soundPlayed) return;
-
-  item.soundPlayed = true;
-
-  const src = `/audio/${encodeURIComponent(item.sound)}.mp3`;
-  try {
-    const audio = new Audio(src);
-    audio.preload = "auto";
-    void audio.play().catch(() => {});
-  } catch {
-    // ignore
-  }
 }
 
 function playToastSound(item: ToastItem) {

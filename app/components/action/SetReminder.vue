@@ -1,20 +1,11 @@
 <template>
-  <button
-    type="button"
-    @click="open = true"
-    class="bg-black px-5 py-3 rounded-full border border-white/10 hover:border-white/50 transition duration-200 ease-in cursor-pointer flex items-center gap-1"
-  >
+  <button type="button" @click="open = true"
+    class="bg-black px-5 py-3 rounded-full border border-white/10 hover:border-white/50 transition duration-200 ease-in cursor-pointer flex items-center gap-1">
     <Plus class="size-5" />
     <p class="text-sm">set reminder</p>
   </button>
 
-  <BaseDrawer
-    v-model="open"
-    :closable="false"
-    side="bottom"
-    :draggable="true"
-    size="full"
-  >
+  <BaseDrawer v-model="open" :closable="false" side="bottom" :draggable="true" size="full">
     <div class="w-1/3 mx-auto space-y-6">
       <section class="space-y-2 text-center">
         <h1 class="text-white text-4xl font-instrument">
@@ -24,24 +15,15 @@
       </section>
 
       <form class="space-y-3" @submit.prevent="saveReminder">
-        <input
-          v-model.trim="label"
-          class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light text-white"
-          name="label"
-          type="text"
-          id="label"
-          placeholder="Remind me of..."
-          autocomplete="off"
-        />
+        <input v-model.trim="label"
+          class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light text-white" name="label"
+          type="text" id="label" placeholder="Remind me of..." autocomplete="off" />
 
         <TimePicker v-model="time" name="time" />
 
-        <button
-          data-drawer-no-drag
-          type="submit"
+        <button data-drawer-no-drag type="submit"
           class="w-full py-3 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-          :disabled="!canSubmit"
-        >
+          :disabled="!canSubmit">
           Set Reminder
         </button>
       </form>
@@ -64,16 +46,9 @@ const canSubmit = computed(
   () => Boolean(label.value?.trim()) && Boolean(time.value),
 );
 
-function capitalizeWords(str: string) {
-  return str
-    .trim()
-    .toLowerCase()
-    .replace(/\b\p{L}/gu, (c) => c.toUpperCase()); // supports unicode letters
-}
-
 function showSuccess(savedLabel: string, savedTime: string) {
   toast.set("Reminder set!", {
-    description: `${capitalizeWords(savedLabel)} • ${savedTime}`,
+    description: `${useCapitalizeWords(savedLabel)} • ${savedTime}`,
     duration: 0,
     sound: "success",
     closable: false
