@@ -4,29 +4,31 @@
     <video class="absolute inset-0 h-full w-full object-cover" :src="savedBg.src" autoplay muted loop />
 
     <div class="relative z-20 h-full w-full flex flex-col gap-5 items-center justify-center">
-      <div class="rounded-[3rem] h-fit w-1/3 bg-glass p-6 flex flex-col gap-10">
-        <!-- Actions -->
-        <section class="flex items-center justify-between w-full">
-          <div class="flex items-center gap-2">
-            <ActionSetReminder />
+      <section class="max-w-2xl mx-auto w-full px-4">
+        <div class="rounded-[3rem] h-fit w-full bg-glass md:p-6 p-5 flex flex-col md:gap-10 gap-7">
+          <!-- Actions -->
+          <section class="flex items-center justify-between w-full">
+            <div class="flex items-center gap-2">
+              <ActionSetReminder />
 
-            <Transition name="pop">
-              <ActionMarkAsDone v-if="activeIndex > 0 && currentReminder" :reminder-id="currentReminder.id"
-                @done="afterDone" />
-            </Transition>
-          </div>
+              <Transition name="pop">
+                <ActionMarkAsDone v-if="activeIndex > 0 && currentReminder" :reminder-id="currentReminder.id"
+                  @done="afterDone" />
+              </Transition>
+            </div>
 
-          <ActionSelectBackground />
-        </section>
+            <ActionSelectBackground />
+          </section>
 
-        <!-- Carousel -->
-        <ReminderCarousel v-model:activeIndex="activeIndex" :hour="hour" :minute="minute" :second="second"
-          :period="period" :date="date" :reminders="reminders" :remainingMap="remainingMap" :currentTime="currentTime"
-          @trigger="handleTrigger" />
+          <!-- Carousel -->
+          <ReminderCarousel v-model:activeIndex="activeIndex" :hour="hour" :minute="minute" :second="second"
+            :period="period" :date="date" :reminders="reminders" :remainingMap="remainingMap" :currentTime="currentTime"
+            @trigger="handleTrigger" />
 
       </div>
+      </section>
     </div>
-    <div class="text-center w-full text-xs text-white/20 mix-blend-difference absolute bottom-5 z-40">
+    <div class="text-center w-full md:text-xs text-[.6rem] text-white/20 mix-blend-difference absolute bottom-5 z-40">
       Powered by
       <a href="https://kinwebb.netlify.app/" target="_blank" rel="noopener noreferrer"
         class="text-white/50 hover:underline hover:text-white/60 ease-in transition-all duration-200">
@@ -64,8 +66,7 @@ const currentTime = computed(
   () => `${time.hour.value}:${time.minute.value} ${time.period.value}`,
 );
 
-const { $background } = useNuxtApp();
-
+const { $background, $videoPrefetch } = useNuxtApp();
 // ✅ saved (cookie-backed)
 const savedBg = computed(() => $background.current.value);
 
@@ -102,4 +103,17 @@ const hour = computed(() => time.hour.value);
 const minute = computed(() => time.minute.value);
 const second = computed(() => time.second.value);
 const period = computed(() => time.period.value);
+
+onMounted(() => {
+  const nuxtApp = useNuxtApp(); // now we're on client, plugin exists
+
+  watch(
+    () => savedBg.value.src,
+    (src) => {
+      if (!src) return;
+      nuxtApp.$videoPrefetch.one(src);
+    },
+    { immediate: true },
+  );
+});
 </script>

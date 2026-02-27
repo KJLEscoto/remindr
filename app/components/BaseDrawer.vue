@@ -172,7 +172,7 @@ const panelSizeClass = computed(() => {
     if (s === "sm") return "h-[30vh] max-h-[30vh]";
     if (s === "md") return "h-[45vh] max-h-[45vh]";
     if (s === "lg") return "h-[70vh] max-h-[70vh]";
-    return "h-[92vh] max-h-[92vh]";
+    return "h-[96vh] max-h-[96vh]";
   } else {
     if (s === "sm") return "w-[320px] max-w-[90vw]";
     if (s === "md") return "w-[420px] max-w-[90vw]";
