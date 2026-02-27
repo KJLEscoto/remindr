@@ -1,28 +1,28 @@
 <template>
   <button type="button" @click="open = true"
-    class="bg-black px-5 py-3 rounded-full border border-white/10 hover:border-white/50 transition duration-200 ease-in cursor-pointer flex items-center gap-1">
+    class="bg-black md:px-5 px-3 py-3 rounded-full border border-white/10 hover:border-white/50 transition duration-200 ease-in cursor-pointer flex items-center gap-1">
     <Plus class="size-5" />
-    <p class="text-sm">set reminder</p>
+    <p class="text-sm md:block hidden">set reminder</p>
   </button>
 
   <BaseDrawer v-model="open" :closable="false" side="bottom" :draggable="true" size="full">
-    <div class="w-1/3 mx-auto space-y-6">
+    <div class="max-w-2xl mx-auto w-full space-y-6">
       <section class="space-y-2 text-center">
         <h1 class="text-white text-4xl font-instrument">
           What should I remind you about today?
         </h1>
-        <p class="text-white/70 font-light">A gentle ping when it’s time.</p>
+        <p class="text-white/70 font-light md:text-base text-sm">A gentle ping when it’s time.</p>
       </section>
 
-      <form class="space-y-3" @submit.prevent="saveReminder">
+      <form class="md:space-y-3 space-y-2" @submit.prevent="saveReminder">
         <input v-model.trim="label"
-          class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light text-white" name="label"
+          class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light text-white md:text-base text-sm" name="label"
           type="text" id="label" placeholder="Remind me of..." autocomplete="off" />
 
         <TimePicker v-model="time" name="time" />
 
         <button data-drawer-no-drag type="submit"
-          class="w-full py-3 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full md:py-3 py-2.5 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed md:text-base text-sm"
           :disabled="!canSubmit">
           Set Reminder
         </button>

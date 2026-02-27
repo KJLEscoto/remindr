@@ -2,7 +2,7 @@
   <div class="relative" ref="root">
     <!-- Display input -->
     <input
-      class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light"
+      class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light md:text-base text-sm"
       :value="display"
       placeholder="--:-- --"
       readonly
@@ -20,7 +20,7 @@
       aria-label="Select time"
       ref="anchorBtn"
     >
-      <Clock4 class="size-5 pointer-events-none" />
+      <Clock4 class="md:size-5 size-4 pointer-events-none" />
     </button>
 
     <!-- Teleported panel -->
@@ -206,10 +206,12 @@ const panelStyle = computed(() => ({
   left: `${panelPos.value.left}px`,
 }));
 
+const PANEL_LEFT_OFFSET = 24; // px (increase = more left)
+
 async function updatePanelPosition() {
   await nextTick();
 
-  const anchor = root.value; // anchor to whole input container (recommended)
+  const anchor = root.value;
   const elPanel = panel.value;
   if (!anchor || !elPanel) return;
 
@@ -222,12 +224,16 @@ async function updatePanelPosition() {
 
   // Align right edge of panel with right edge of anchor
   let left = r.right - panelRect.width;
+
+  // ✅ nudge left a bit
+  left -= PANEL_LEFT_OFFSET;
+
+  // keep in viewport
   left = Math.max(8, Math.min(left, vw - panelRect.width - 8));
 
   const spaceBelow = vh - r.bottom;
   const spaceAbove = r.top;
 
-  // Prefer below, but flip if not enough space
   let top: number;
   if (spaceBelow >= panelRect.height + gap || spaceBelow >= spaceAbove) {
     top = r.bottom + gap;

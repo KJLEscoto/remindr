@@ -6,17 +6,17 @@
       <div class="flex will-change-transform" :style="trackStyle">
         <!-- Slide 0: TIME -->
         <div class="w-full shrink-0 px-2">
-          <div class="text-8xl flex items-center justify-center gap-4 font-instrument">
+          <div class="md:text-8xl text-6xl flex items-center justify-center md:gap-4 gap-3 font-instrument !text-nowrap">
             {{ hour }}
             <Delimiter /> {{ minute }}
             <Delimiter /> {{ second }} {{ period }}
           </div>
-          <p class="text-white/80 mt-2">{{ date }}</p>
+          <p class="text-white/80 mt-2 md:text-base text-sm">{{ date }}</p>
         </div>
 
         <!-- Slides: reminders -->
         <div v-for="item in reminders" :key="item.id" class="w-full shrink-0 px-2">
-          <div class="text-8xl flex items-center justify-center gap-4 font-instrument">
+          <div class="md:text-8xl text-6xl flex items-center justify-center md:gap-4 gap-3 font-instrument !text-nowrap">
             <template v-if="remainingMap.get(item.id)">
               - {{ remainingMap.get(item.id)!.hour }}
               <Delimiter /> {{ remainingMap.get(item.id)!.minute }}
@@ -29,7 +29,7 @@
             </template>
           </div>
 
-          <p class="text-white/80 mt-2">
+          <p class="text-white/80 mt-2 md:text-base text-sm">
             <span class="capitalize">{{ item.label }}</span> ({{ item.time }})
           </p>
         </div>
@@ -37,8 +37,8 @@
     </div>
 
     <!-- Indicators (always at least 1 dot to prevent layout collapse) -->
-    <section class="flex items-center justify-center gap-2 h-2">
-      <button v-for="i in totalSlides" :key="i" type="button" class="h-2 w-2 rounded-full transition"
+    <section class="flex items-center justify-center md:gap-2 gap-1.5 h-auto">
+      <button v-for="i in totalSlides" :key="i" type="button" class="md:h-2 h-1.5 md:w-2 w-1.5 rounded-full transition"
         :class="activeIndex === i - 1 ? 'bg-white' : 'bg-white/30 hover:bg-white/50'" @click="goTo(i - 1)"
         aria-label="Go to slide" />
     </section>
