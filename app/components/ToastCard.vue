@@ -148,19 +148,6 @@ function requestAlarmDone(exitVec?: { x: number; y: number }) {
   });
 }
 
-/* Swipe */
-const drag = ref<{
-  id: number;
-  startX: number;
-  startY: number;
-  dx: number;
-  dy: number;
-  dragging: boolean;
-} | null>(null);
-
-const START_THRESHOLD = 8;
-const DISMISS_THRESHOLD = 52;
-
 const cardStyle = computed(() => {
   if (closing.value) {
     const e = exit.value ?? { x: 0, y: -14 };
@@ -182,18 +169,39 @@ const cardStyle = computed(() => {
   } as Record<string, string>;
 });
 
+/* Swipe: hold-to-drag on mobile, threshold-drag on mouse */
+const drag = ref<{
+  id: number;
+  startX: number;
+  startY: number;
+  dx: number;
+  dy: number;
+  dragging: boolean;
+  allowDrag: boolean;      // ✅ gate
+  holdTimer?: number;
+} | null>(null);
+
+const HOLD_MS = 500;
+const START_THRESHOLD = 10;     // bump slightly
+const DISMISS_THRESHOLD = 52;
+
+function isTouchPointer(e: PointerEvent) {
+  return e.pointerType === "touch" || e.pointerType === "pen";
+}
+
+function clearHold() {
+  if (drag.value?.holdTimer) {
+    window.clearTimeout(drag.value.holdTimer);
+    drag.value.holdTimer = undefined;
+  }
+}
+
 function onPointerDown(e: PointerEvent) {
   if (closing.value) return;
   if (e.pointerType === "mouse" && e.button !== 0) return;
 
-  // ✅ don't start swipe from interactive elements
   const target = e.target as HTMLElement | null;
-  if (target?.closest("button, a, input, textarea, select, [data-no-drag]")) {
-    return;
-  }
-
-  const el = e.currentTarget as HTMLElement;
-  el.setPointerCapture(e.pointerId);
+  if (target?.closest("button, a, input, textarea, select, [data-no-drag]")) return;
 
   drag.value = {
     id: e.pointerId,
@@ -202,7 +210,27 @@ function onPointerDown(e: PointerEvent) {
     dx: 0,
     dy: 0,
     dragging: false,
+    allowDrag: !isTouchPointer(e), // ✅ mouse can drag immediately (but only after threshold)
   };
+
+  // ✅ Touch: require long press before we even allow drag
+  if (isTouchPointer(e)) {
+    const el = e.currentTarget as HTMLElement;
+    drag.value.holdTimer = window.setTimeout(() => {
+      if (!drag.value || drag.value.id !== e.pointerId || closing.value) return;
+      drag.value.allowDrag = true;
+
+      // capture only after hold (prevents “click becomes drag”)
+      try {
+        el.setPointerCapture(e.pointerId);
+      } catch {}
+    }, HOLD_MS);
+  } else {
+    // mouse capture is fine
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {}
+  }
 }
 
 function onPointerMove(e: PointerEvent) {
@@ -213,10 +241,23 @@ function onPointerMove(e: PointerEvent) {
   const dx = e.clientX - d.startX;
   const dy = e.clientY - d.startY;
 
+  // ✅ Touch: if user moves before hold completes, cancel drag (treat as scroll/tap)
+  if (!d.allowDrag && isTouchPointer(e)) {
+    if (Math.hypot(dx, dy) > START_THRESHOLD) clearHold();
+    return;
+  }
+
+  // ✅ Still not allowed? do nothing
+  if (!d.allowDrag) return;
+
+  // ✅ Start dragging only after threshold (prevents micro-move on click)
   if (!d.dragging) {
     if (Math.hypot(dx, dy) < START_THRESHOLD) return;
     d.dragging = true;
   }
+
+  // when actively dragging, prevent scrolling
+  e.preventDefault?.();
 
   d.dx = dx;
   d.dy = dy;
@@ -226,6 +267,14 @@ function onPointerUp(e: PointerEvent) {
   if (closing.value) return;
   const d = drag.value;
   if (!d || e.pointerId !== d.id) return;
+
+  clearHold();
+
+  // ✅ If never started dragging, don't move the toast at all
+  if (!d.dragging) {
+    drag.value = null;
+    return;
+  }
 
   const { dx, dy } = d;
   const absX = Math.abs(dx);
@@ -252,6 +301,7 @@ function onPointerUp(e: PointerEvent) {
     return;
   }
 
+  // snap back
   d.dragging = false;
   d.dx = 0;
   d.dy = 0;

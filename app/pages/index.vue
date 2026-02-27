@@ -87,7 +87,7 @@ async function handleTrigger(id: string) {
   const ok = await $audio.unlock();
 
   if (!ok) {
-    toast.error("Tap to enable sound", {
+    toast.warning("Tap to enable sound", {
       description: "iPhone blocks alarm audio until you tap once.",
       duration: 0,
       closable: true,

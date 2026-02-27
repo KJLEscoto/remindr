@@ -63,7 +63,14 @@ export const toastStore = reactive({
   toasts: [] as ToastItem[],
 });
 
+/** -----------------------------
+ *  Audio (iOS-safe)
+ *  ----------------------------- */
 const loopAudios = new Map<string, HTMLAudioElement>();
+const oneShotCache = new Map<string, HTMLAudioElement>();
+
+let audioUnlocked = false;
+let unlockBound = false;
 
 function stopLoopSound(id: string) {
   const audio = loopAudios.get(id);
@@ -75,6 +82,139 @@ function stopLoopSound(id: string) {
   loopAudios.delete(id);
 }
 
+function bindAudioUnlock() {
+  if (!import.meta.client || unlockBound) return;
+  unlockBound = true;
+
+  const unlock = () => {
+    audioUnlocked = true;
+
+    // Best-effort "gesture unlock"
+    // ✅ For best reliability on iOS, add /public/audio/silence.mp3 (0.1s silent)
+    // and swap to: new Audio("/audio/silence.mp3") with volume 0.
+    try {
+      const a = new Audio("/audio/silence.mp3");
+      a.preload = "auto";
+      a.volume = 0;
+      void a.play().catch(() => {});
+    } catch {
+      // fallback (less reliable)
+      try {
+        const a = new Audio();
+        a.muted = true;
+        void a.play().catch(() => {});
+      } catch {}
+    }
+
+    window.removeEventListener("touchstart", unlock);
+    window.removeEventListener("pointerdown", unlock);
+    window.removeEventListener("mousedown", unlock);
+    window.removeEventListener("keydown", unlock);
+  };
+
+  window.addEventListener("touchstart", unlock, { passive: true, once: true });
+  window.addEventListener("pointerdown", unlock, { passive: true, once: true });
+  window.addEventListener("mousedown", unlock, { passive: true, once: true });
+  window.addEventListener("keydown", unlock, { passive: true, once: true });
+}
+
+function getCachedAudio(src: string) {
+  let a = oneShotCache.get(src);
+  if (!a) {
+    a = new Audio(src);
+    a.preload = "auto";
+    oneShotCache.set(src, a);
+  }
+  return a;
+}
+
+function queueOnNextGesture(fn: () => void) {
+  const run = () => {
+    window.removeEventListener("touchstart", run);
+    window.removeEventListener("pointerdown", run);
+    window.removeEventListener("mousedown", run);
+    window.removeEventListener("keydown", run);
+    fn();
+  };
+
+  window.addEventListener("touchstart", run, { passive: true, once: true });
+  window.addEventListener("pointerdown", run, { passive: true, once: true });
+  window.addEventListener("mousedown", run, { passive: true, once: true });
+  window.addEventListener("keydown", run, { passive: true, once: true });
+}
+
+function playToastSound(item: ToastItem) {
+  if (!import.meta.client) return;
+  if (!item.sound) return;
+
+  bindAudioUnlock();
+
+  const src = `/audio/${encodeURIComponent(item.sound)}.mp3`;
+
+  // ✅ looping alarm
+  if (item.soundLoop) {
+    if (loopAudios.has(item.id)) return;
+
+    const startLoop = () => {
+      if (loopAudios.has(item.id)) return;
+
+      try {
+        const audio = new Audio(src);
+        audio.preload = "auto";
+        audio.loop = true;
+        audio.currentTime = 0;
+        loopAudios.set(item.id, audio);
+
+        void audio.play().catch(() => {
+          // if play fails, allow retry on next gesture
+          loopAudios.delete(item.id);
+        });
+      } catch {
+        // ignore
+      }
+    };
+
+    // iOS: if not unlocked, wait for gesture then start
+    if (!audioUnlocked) {
+      queueOnNextGesture(() => startLoop());
+      return;
+    }
+
+    startLoop();
+    return;
+  }
+
+  // ✅ one-shot
+  if (item.soundPlayed) return;
+  item.soundPlayed = true;
+
+  const playOnce = () => {
+    try {
+      const a = getCachedAudio(src);
+      a.loop = false;
+      a.currentTime = 0;
+      a.muted = false;
+      void a.play().catch(() => {});
+    } catch {
+      // ignore
+    }
+  };
+
+  // iOS: if not unlocked, wait for gesture then play
+  if (!audioUnlocked) {
+    queueOnNextGesture(() => playOnce());
+    return;
+  }
+
+  playOnce();
+}
+
+// bind unlock listeners at module load (client)
+if (import.meta.client) bindAudioUnlock();
+
+/** -----------------------------
+ *  Toast lifecycle
+ *  ----------------------------- */
 export function dismiss(id: string) {
   stopLoopSound(id);
   toastStore.toasts = toastStore.toasts.filter((t) => t.id !== id);
@@ -83,42 +223,6 @@ export function dismiss(id: string) {
 function scheduleAutoDismiss(item: ToastItem) {
   if (item.duration <= 0) return;
   window.setTimeout(() => dismiss(item.id), item.duration);
-}
-
-function playToastSound(item: ToastItem) {
-  if (!import.meta.client) return;
-  if (!item.sound) return;
-
-  const src = `/audio/${encodeURIComponent(item.sound)}.mp3`;
-
-  // ✅ looping alarm
-  if (item.soundLoop) {
-    // avoid duplicate loops
-    if (loopAudios.has(item.id)) return;
-
-    try {
-      const audio = new Audio(src);
-      audio.preload = "auto";
-      audio.loop = true;
-      loopAudios.set(item.id, audio);
-      void audio.play().catch(() => {});
-    } catch {
-      // ignore
-    }
-    return;
-  }
-
-  // ✅ one-shot (your existing behavior)
-  if (item.soundPlayed) return;
-  item.soundPlayed = true;
-
-  try {
-    const audio = new Audio(src);
-    audio.preload = "auto";
-    void audio.play().catch(() => {});
-  } catch {
-    // ignore
-  }
 }
 
 export function toast(opts: ToastOptions) {
