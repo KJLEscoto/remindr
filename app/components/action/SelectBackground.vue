@@ -42,23 +42,31 @@
           <!-- show text only when draft != saved -->
           <div
             v-if="isPreviewing"
-            class="absolute inset-0 flex items-center justify-center"
+            class="absolute inset-0 flex items-center justify-center z-10"
           >
             <p class="text-white px-6 py-2 rounded-full bg-black/40 text-sm">
               Background Preview
             </p>
           </div>
 
+          <!-- IMPORTANT: keep video hidden until ready to avoid iOS control flicker -->
           <video
-            class="h-full w-full object-cover rounded-3xl"
+            ref="previewVideoEl"
+            class="h-full w-full object-cover rounded-3xl pointer-events-none"
+            :class="previewReady ? 'opacity-100' : 'opacity-0'"
             :src="draftBg.src"
             autoplay
             muted
             loop
             playsinline
-            @loadstart="previewLoading = true"
-            @loadeddata="previewLoading = false"
-            @canplay="previewLoading = false"
+            webkit-playsinline
+            preload="auto"
+            disablepictureinpicture
+            controlslist="nodownload noplaybackrate noremoteplayback"
+            @loadstart="onPreviewLoadStart"
+            @loadedmetadata="onPreviewLoaded"
+            @canplay="onPreviewLoaded"
+            @loadeddata="onPreviewLoaded"
           />
         </div>
       </section>
@@ -209,7 +217,7 @@ async function applyBackground() {
       description: `${label} is now the theme.`,
       duration: 0,
       sound: "success",
-      closable: false,
+      closable: true,
     });
 
     open.value = false;
@@ -220,7 +228,7 @@ async function applyBackground() {
       description: "Failed to set background. Please try again.",
       duration: 0,
       sound: "error",
-      closable: false,
+      closable: true,
     });
   }
 }
@@ -369,6 +377,50 @@ watch(open, async (v) => {
   // keep small to avoid heavy network
   $videoPrefetch.many(urls, 4);
 });
+
+const previewVideoEl = ref<HTMLVideoElement | null>(null);
+const previewReady = ref(false);
+
+function onPreviewLoadStart() {
+  previewLoading.value = true;
+  previewReady.value = false;
+}
+
+function onPreviewLoaded() {
+  previewLoading.value = false;
+  previewReady.value = true;
+}
+
+// When src changes, re-hide video immediately (prevents flicker)
+watch(
+  () => draftBg.value.src,
+  async () => {
+    previewReady.value = false;
+    previewLoading.value = true;
+
+    await nextTick();
+    const v = previewVideoEl.value;
+    if (!v) return;
+
+    // make sure no controls ever appear
+    v.removeAttribute("controls");
+
+    // enforce iOS inline + muted BEFORE it tries to play
+    v.muted = true;
+    v.playsInline = true;
+    v.setAttribute("muted", "");
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
+    v.setAttribute("disablepictureinpicture", "");
+
+    // try to autoplay inline (won't throw if allowed)
+    try {
+      await v.play();
+    } catch {
+      // ignore
+    }
+  },
+);
 </script>
 
 <style scoped>
@@ -384,5 +436,14 @@ watch(open, async (v) => {
 }
 .w-full.overflow-x-auto::-webkit-scrollbar {
   display: none;
+}
+
+video::-webkit-media-controls,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-enclosure {
+  display: none !important;
+  -webkit-appearance: none;
 }
 </style>

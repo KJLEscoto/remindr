@@ -1,19 +1,39 @@
 <template>
   <main class="h-screen w-full relative">
     <!-- background video -->
-    <video class="absolute inset-0 h-full w-full object-cover" :src="savedBg.src" autoplay muted loop />
+    <video
+      ref="bgVideoEl"
+      class="absolute inset-0 h-full w-full object-cover pointer-events-none"
+      :src="savedBg.src"
+      autoplay
+      muted
+      loop
+      playsinline
+      webkit-playsinline
+      preload="auto"
+      disablepictureinpicture
+      controlslist="nodownload noplaybackrate noremoteplayback"
+      aria-hidden="true"
+    />
 
-    <div class="relative z-20 h-full w-full flex flex-col gap-5 items-center justify-center">
+    <div
+      class="relative z-20 h-full w-full flex flex-col gap-5 items-center justify-center"
+    >
       <section class="max-w-2xl mx-auto w-full px-4">
-        <div class="rounded-[3rem] h-fit w-full bg-glass md:p-6 p-5 flex flex-col md:gap-10 gap-7">
+        <div
+          class="rounded-[3rem] h-fit w-full bg-glass md:p-6 p-5 flex flex-col md:gap-10 gap-7"
+        >
           <!-- Actions -->
           <section class="flex items-center justify-between w-full">
             <div class="flex items-center gap-2">
               <ActionSetReminder />
 
               <Transition name="pop">
-                <ActionMarkAsDone v-if="activeIndex > 0 && currentReminder" :reminder-id="currentReminder.id"
-                  @done="afterDone" />
+                <ActionMarkAsDone
+                  v-if="activeIndex > 0 && currentReminder"
+                  :reminder-id="currentReminder.id"
+                  @done="afterDone"
+                />
               </Transition>
             </div>
 
@@ -21,17 +41,31 @@
           </section>
 
           <!-- Carousel -->
-          <ReminderCarousel v-model:activeIndex="activeIndex" :hour="hour" :minute="minute" :second="second"
-            :period="period" :date="date" :reminders="reminders" :remainingMap="remainingMap" :currentTime="currentTime"
-            @trigger="handleTrigger" />
-
-      </div>
+          <ReminderCarousel
+            v-model:activeIndex="activeIndex"
+            :hour="hour"
+            :minute="minute"
+            :second="second"
+            :period="period"
+            :date="date"
+            :reminders="reminders"
+            :remainingMap="remainingMap"
+            :currentTime="currentTime"
+            @trigger="handleTrigger"
+          />
+        </div>
       </section>
     </div>
-    <div class="text-center w-full md:text-xs text-[.6rem] text-white/20 mix-blend-difference absolute bottom-5 z-40">
+    <div
+      class="text-center w-full md:text-xs text-[.6rem] text-white/20 mix-blend-difference absolute bottom-5 z-40"
+    >
       Powered by
-      <a href="https://kinwebb.netlify.app/" target="_blank" rel="noopener noreferrer"
-        class="text-white/50 hover:underline hover:text-white/60 ease-in transition-all duration-200">
+      <a
+        href="https://kinwebb.netlify.app/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-white/50 hover:underline hover:text-white/60 ease-in transition-all duration-200"
+      >
         KinWebb
       </a>
       <!-- |
@@ -54,7 +88,7 @@ function handleTrigger(id: string) {
     duration: 0,
     sound: "alarm",
     soundLoop: true,
-    closable: false
+    closable: false,
   });
 }
 
@@ -116,4 +150,28 @@ onMounted(() => {
     { immediate: true },
   );
 });
+
+const bgVideoEl = ref<HTMLVideoElement | null>(null);
+
+watch(
+  () => savedBg.value.src,
+  async () => {
+    await nextTick();
+    const v = bgVideoEl.value;
+    if (!v) return;
+
+    v.muted = true;
+    v.playsInline = true;
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
+    v.setAttribute("muted", "");
+    v.setAttribute("loop", "");
+    v.setAttribute("preload", "auto");
+
+    try {
+      await v.play();
+    } catch {}
+  },
+  { immediate: true },
+);
 </script>

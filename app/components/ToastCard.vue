@@ -143,7 +143,7 @@ function requestAlarmDone(exitVec?: { x: number; y: number }) {
       description: `${useCapitalizeWords(label)}${time ? ` • ${time}` : ""}`,
       duration: 0,
       sound: "success",
-      closable: false,
+      closable: true,
     });
   });
 }
