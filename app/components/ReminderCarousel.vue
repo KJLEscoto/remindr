@@ -119,7 +119,7 @@ const trackStyle = computed(() => {
   const x = dragging.value ? dragX.value : trackX.value
   return {
     transform: `translate3d(${x}px,0,0)`,
-    transition: dragging.value ? "none" : "transform 360ms cubic-bezier(.22,1,.36,1)",
+    transition: dragging.value ? "none" : "transform 720ms cubic-bezier(.22,1,.36,1)",
   }
 })
 
@@ -153,11 +153,14 @@ function onPointerDown(e: PointerEvent) {
   window.addEventListener("pointercancel", onPointerUp, { passive: true })
 }
 
+
+const DRAG_SENSITIVITY = 2;
+
 function onPointerMove(e: PointerEvent) {
   if (!dragging.value) return
   e.preventDefault()
 
-  const dx = e.clientX - startX.value
+  const dx = (e.clientX - startX.value) * DRAG_SENSITIVITY
   const raw = startTrackX.value + dx
 
   const minX = -(totalSlides.value - 1) * viewportW.value
