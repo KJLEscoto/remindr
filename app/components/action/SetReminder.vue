@@ -51,7 +51,7 @@ function showSuccess(savedLabel: string, savedTime: string) {
     description: `${useCapitalizeWords(savedLabel)} • ${savedTime}`,
     duration: 0,
     sound: "success",
-    closable: false
+    closable: true,
   });
 }
 
@@ -60,7 +60,7 @@ function showRequireField() {
     description: "Label and time are required.",
     duration: 0,
     sound: "error",
-    closable: false
+    closable: true,
   });
 }
 

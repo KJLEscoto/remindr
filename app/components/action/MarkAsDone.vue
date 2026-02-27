@@ -1,6 +1,10 @@
 <template>
-  <button type="button" :disabled="disabled" @click="onDone"
-    class="bg-green-950 md:px-5 px-3 py-3 rounded-full border border-white/10 hover:border-green-500/50 transition duration-200 ease-in cursor-pointer flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed">
+  <button
+    type="button"
+    :disabled="disabled"
+    @click="onDone"
+    class="bg-green-950 md:px-5 px-3 py-3 rounded-full border border-white/10 hover:border-green-500/50 transition duration-200 ease-in cursor-pointer flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+  >
     <p class="text-sm md:block hidden">mark as done</p>
     <Check class="size-5" />
   </button>
@@ -33,7 +37,8 @@ const { $reminders } = useNuxtApp();
  * Fallback: read cookie directly (adjust cookie key if yours differs).
  */
 const reminders = computed<ReminderItem[]>(() => {
-  const fromPlugin = ($reminders as any)?.items?.value ?? ($reminders as any)?.items;
+  const fromPlugin =
+    ($reminders as any)?.items?.value ?? ($reminders as any)?.items;
   if (Array.isArray(fromPlugin)) return fromPlugin;
 
   const cookie = useCookie<ReminderItem[]>("reminders", { default: () => [] });
@@ -45,7 +50,7 @@ function showDoneToast(label: string, time: string) {
     description: `${useCapitalizeWords(label)} • ${time}`,
     duration: 0,
     sound: "success",
-    closable: false
+    closable: true,
   });
 }
 
@@ -65,7 +70,7 @@ function onDone() {
       description: "Removed from your list.",
       duration: 0,
       sound: "success",
-      closable: false
+      closable: true,
     });
   }
 
