@@ -76,12 +76,23 @@
 
 <script setup lang="ts">
 import { toast } from "~/lib/toast";
+const { $background, $audio } = useNuxtApp();
 
-function handleTrigger(id: string) {
+async function handleTrigger(id: string) {
   const item = reminders.value.find((r) => r.id === id);
   if (!item) return;
 
   $reminders.remove(id);
+
+  const ok = await $audio.unlock();
+
+  if (!ok) {
+    toast.error("Tap to enable sound", {
+      description: "iPhone blocks alarm audio until you tap once.",
+      duration: 0,
+      closable: true,
+    });
+  }
 
   toast.alarm(`${item.time}`, {
     description: `${useCapitalizeWords(item.label)}`,
@@ -100,7 +111,6 @@ const currentTime = computed(
   () => `${time.hour.value}:${time.minute.value} ${time.period.value}`,
 );
 
-const { $background, $videoPrefetch } = useNuxtApp();
 // ✅ saved (cookie-backed)
 const savedBg = computed(() => $background.current.value);
 
