@@ -169,7 +169,7 @@ const cardStyle = computed(() => {
   } as Record<string, string>;
 });
 
-/* Swipe: hold-to-drag on mobile, threshold-drag on mouse */
+/* Swipe: free 2D drag (x+y) with restrictions, no long-press */
 const drag = ref<{
   id: number;
   startX: number;
@@ -177,31 +177,38 @@ const drag = ref<{
   dx: number;
   dy: number;
   dragging: boolean;
-  allowDrag: boolean;      // ✅ gate
-  holdTimer?: number;
 } | null>(null);
 
-const HOLD_MS = 500;
-const START_THRESHOLD = 10;     // bump slightly
+const START_THRESHOLD = 14; // prevents tap jitter; raise if still moves on tap
 const DISMISS_THRESHOLD = 52;
 
-function isTouchPointer(e: PointerEvent) {
-  return e.pointerType === "touch" || e.pointerType === "pen";
+// How far the toast is allowed to move while dragging
+const MAX_X = 140; // px
+const MAX_Y = 90;  // px
+
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
 }
 
-function clearHold() {
-  if (drag.value?.holdTimer) {
-    window.clearTimeout(drag.value.holdTimer);
-    drag.value.holdTimer = undefined;
-  }
+// Soft clamp / rubber band near edges (feels natural)
+function rubber(n: number, min: number, max: number, k = 0.35) {
+  if (n > max) return max + (n - max) * k;
+  if (n < min) return min + (n - min) * k;
+  return n;
 }
 
 function onPointerDown(e: PointerEvent) {
   if (closing.value) return;
   if (e.pointerType === "mouse" && e.button !== 0) return;
 
+  // ✅ don't start drag from interactive elements
   const target = e.target as HTMLElement | null;
   if (target?.closest("button, a, input, textarea, select, [data-no-drag]")) return;
+
+  const el = e.currentTarget as HTMLElement;
+  try {
+    el.setPointerCapture(e.pointerId);
+  } catch {}
 
   drag.value = {
     id: e.pointerId,
@@ -210,27 +217,7 @@ function onPointerDown(e: PointerEvent) {
     dx: 0,
     dy: 0,
     dragging: false,
-    allowDrag: !isTouchPointer(e), // ✅ mouse can drag immediately (but only after threshold)
   };
-
-  // ✅ Touch: require long press before we even allow drag
-  if (isTouchPointer(e)) {
-    const el = e.currentTarget as HTMLElement;
-    drag.value.holdTimer = window.setTimeout(() => {
-      if (!drag.value || drag.value.id !== e.pointerId || closing.value) return;
-      drag.value.allowDrag = true;
-
-      // capture only after hold (prevents “click becomes drag”)
-      try {
-        el.setPointerCapture(e.pointerId);
-      } catch {}
-    }, HOLD_MS);
-  } else {
-    // mouse capture is fine
-    try {
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    } catch {}
-  }
 }
 
 function onPointerMove(e: PointerEvent) {
@@ -241,26 +228,18 @@ function onPointerMove(e: PointerEvent) {
   const dx = e.clientX - d.startX;
   const dy = e.clientY - d.startY;
 
-  // ✅ Touch: if user moves before hold completes, cancel drag (treat as scroll/tap)
-  if (!d.allowDrag && isTouchPointer(e)) {
-    if (Math.hypot(dx, dy) > START_THRESHOLD) clearHold();
-    return;
-  }
-
-  // ✅ Still not allowed? do nothing
-  if (!d.allowDrag) return;
-
-  // ✅ Start dragging only after threshold (prevents micro-move on click)
+  // ✅ don’t move at all until user meaningfully swipes
   if (!d.dragging) {
     if (Math.hypot(dx, dy) < START_THRESHOLD) return;
     d.dragging = true;
   }
 
-  // when actively dragging, prevent scrolling
+  // when actively dragging, prevent scroll
   e.preventDefault?.();
 
-  d.dx = dx;
-  d.dy = dy;
+  // ✅ free movement with restrictions on both axes
+  d.dx = rubber(dx, -MAX_X, MAX_X);
+  d.dy = rubber(dy, -MAX_Y, MAX_Y);
 }
 
 function onPointerUp(e: PointerEvent) {
@@ -268,9 +247,7 @@ function onPointerUp(e: PointerEvent) {
   const d = drag.value;
   if (!d || e.pointerId !== d.id) return;
 
-  clearHold();
-
-  // ✅ If never started dragging, don't move the toast at all
+  // If never started dragging, treat as tap (no motion)
   if (!d.dragging) {
     drag.value = null;
     return;
@@ -284,6 +261,7 @@ function onPointerUp(e: PointerEvent) {
   const swipeIsUp = dy < 0 && absY >= absX;
   const swipeIsLeftRight = absX > absY;
 
+  // keep your existing rule: don't dismiss on downward swipe
   const shouldDismiss =
     !swipeIsDown &&
     ((swipeIsLeftRight && absX >= DISMISS_THRESHOLD) ||
