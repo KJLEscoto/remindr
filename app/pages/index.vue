@@ -37,11 +37,7 @@
               </Transition>
             </div>
 
-            <!-- <ActionSelectBackground /> -->
-             <div class="flex items-center gap-2">
-              <AudioUnlockPill />
-              <ActionSelectBackground />
-            </div>
+            <ActionSelectBackground />
           </section>
 
           <!-- Carousel -->
