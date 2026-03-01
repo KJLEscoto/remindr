@@ -37,7 +37,11 @@
               </Transition>
             </div>
 
-            <ActionSelectBackground />
+            <!-- <ActionSelectBackground /> -->
+             <div class="flex items-center gap-2">
+              <AudioUnlockPill />
+              <ActionSelectBackground />
+            </div>
           </section>
 
           <!-- Carousel -->
@@ -84,11 +88,12 @@ async function handleTrigger(id: string) {
 
   $reminders.remove(id);
 
-  const ok = await $audio.unlock();
-
-  if (!ok) {
-    toast.warning("Tap to enable sound", {
-      description: "iPhone blocks alarm audio until you tap once.",
+  // If audio is still locked (user never tapped yet), show prompt
+  // (import from ~/lib/audio)
+  const { isAudioUnlocked } = await import("~/lib/audio");
+  if (!isAudioUnlocked()) {
+    toast.warning("Tap anywhere to enable alarm sound", {
+      description: "iPhone blocks alarm audio until you interact once.",
       duration: 0,
       closable: true,
     });
