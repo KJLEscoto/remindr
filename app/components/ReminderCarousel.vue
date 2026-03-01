@@ -1,7 +1,7 @@
 <template>
   <section class="w-full text-center flex flex-col gap-10 select-none">
     <!-- Viewport -->
-    <div ref="viewport" class="relative overflow-hidden touch-pan-y" @pointerdown="onPointerDown">
+    <div ref="viewport" class="relative overflow-hidden carousel-viewport" @pointerdown="onPointerDown">
       <!-- Track -->
       <div class="flex will-change-transform" :style="trackStyle">
         <!-- Slide 0: TIME -->
@@ -182,3 +182,12 @@ function onPointerUp() {
   goTo(rawIndex)
 }
 </script>
+
+<style scoped>
+.carousel-viewport {
+  touch-action: none;              /* ✅ Android: don't let browser steal gesture */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+</style>
