@@ -317,6 +317,11 @@ async function onAction(a: ToastAction) {
     filter 240ms ease,
     transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
   will-change: transform, opacity, filter;
+
+    touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .toast-card > .flex {
