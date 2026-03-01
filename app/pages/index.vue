@@ -57,26 +57,31 @@
       </section>
     </div>
     <div
-      class="text-center w-full md:text-xs text-[.6rem] text-white/20 mix-blend-difference absolute bottom-5 z-40"
-    >
-      Powered by
-      <a
-        href="https://kinwebb.netlify.app/"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-white/50 hover:underline hover:text-white/60 ease-in transition-all duration-200"
-      >
-        KinWebb
-      </a>
-      <!-- |
-      Share your feedback here. -->
-    </div>
+  class="flex items-center justify-center gap-1 w-full md:text-xs text-[.6rem] text-white/30 absolute bottom-5 z-40"
+>
+  <p>Powered by</p>
+
+  <a
+    href="https://kinwebb.netlify.app/"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-white/60 hover:!text-white/100 ease-in transition-all duration-200 group relative inline-block"
+  >
+    KinWebb
+
+    <img
+      src="/model.png"
+      alt="kinwebb"
+      class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 size-8 opacity-0 translate-y-2 scale-75 transition-all duration-300 ease-in pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100"
+    />
+  </a>
+</div>
   </main>
 </template>
 
 <script setup lang="ts">
 import { toast } from "~/lib/toast";
-const { $background, $audio } = useNuxtApp();
+const { $background } = useNuxtApp();
 
 async function handleTrigger(id: string) {
   const item = reminders.value.find((r) => r.id === id);
@@ -89,7 +94,7 @@ async function handleTrigger(id: string) {
   const { isAudioUnlocked } = await import("~/lib/audio");
   if (!isAudioUnlocked()) {
     toast.warning("Tap anywhere to enable alarm sound", {
-      description: "iPhone blocks alarm audio until you interact once.",
+      description: "iOS blocks alarm audio until you interact once.",
       duration: 0,
       closable: true,
     });

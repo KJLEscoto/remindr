@@ -2,9 +2,10 @@
   <div class="relative" ref="root">
     <!-- Display input -->
     <input
-      class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light md:text-base text-sm"
+      class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light text-base cursor-pointer"
       :value="display"
       placeholder="--:-- --"
+      @click="toggle"
       readonly
       @focus="($event.target as HTMLInputElement).blur()"
       aria-label="Selected time"
@@ -206,7 +207,7 @@ const panelStyle = computed(() => ({
   left: `${panelPos.value.left}px`,
 }));
 
-const PANEL_LEFT_OFFSET = 24; // px (increase = more left)
+const PANEL_LEFT_OFFSET = 0; // px (increase = more left [24 px originally])
 
 async function updatePanelPosition() {
   await nextTick();
@@ -221,12 +222,13 @@ async function updatePanelPosition() {
   const gap = 8;
   const vw = window.innerWidth;
   const vh = window.innerHeight;
+  const EXTRA_BOTTOM_OFFSET = -30;
 
-  // Align right edge of panel with right edge of anchor
-  let left = r.right - panelRect.width;
+  // ✅ Center the panel under the input
+  let left = r.left + (r.width - panelRect.width) / 2;
 
-  // ✅ nudge left a bit
-  left -= PANEL_LEFT_OFFSET;
+  // optional small nudge
+  left += PANEL_LEFT_OFFSET;
 
   // keep in viewport
   left = Math.max(8, Math.min(left, vw - panelRect.width - 8));
@@ -236,10 +238,10 @@ async function updatePanelPosition() {
 
   let top: number;
   if (spaceBelow >= panelRect.height + gap || spaceBelow >= spaceAbove) {
-    top = r.bottom + gap;
+    top = r.bottom + gap + EXTRA_BOTTOM_OFFSET;
   } else {
-    top = r.top - panelRect.height - gap;
-  }
+  top = r.top - panelRect.height - gap - EXTRA_BOTTOM_OFFSET;
+}
 
   top = Math.max(8, Math.min(top, vh - panelRect.height - 8));
 

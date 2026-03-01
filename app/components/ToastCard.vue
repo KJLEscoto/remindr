@@ -119,9 +119,28 @@ const CLOSE_MS = 240;
 const cardEl = ref<HTMLElement | null>(null);
 const exit = ref<{ x: number; y: number } | null>(null);
 
+function showAlarmCompletedToast() {
+  const label = props.toast.description || props.toast.label || "Reminder";
+  const time = props.toast.label || "";
+
+  toastApi.complete("Reminder completed!", {
+    description: `${useCapitalizeWords(label)}${time ? ` • ${time}` : ""}`,
+    duration: 0,
+    sound: "success",
+    closable: true,
+  });
+}
+
+function requestAlarmDone(exitVec?: { x: number; y: number }) {
+  requestClose(exitVec, () => {
+    showAlarmCompletedToast();
+  });
+}
+
 function requestClose(
   exitVec?: { x: number; y: number },
-  afterClose?: () => void
+  afterClose?: () => void,
+  bySwipe = false
 ) {
   if (closing.value) return;
   closing.value = true;
@@ -129,23 +148,14 @@ function requestClose(
 
   window.setTimeout(() => {
     emit("dismiss");
-    afterClose?.();
+
+    // ✅ alarm swipe dismiss => still show confirmation toast
+    if (bySwipe && props.toast.variant === "alarm") {
+      showAlarmCompletedToast();
+    } else {
+      afterClose?.();
+    }
   }, CLOSE_MS);
-}
-
-function requestAlarmDone(exitVec?: { x: number; y: number }) {
-  // close current toast first (animation)
-  requestClose(exitVec, () => {
-    const label = props.toast.description || props.toast.label || "Reminder";
-    const time = props.toast.label || "";
-
-    toastApi.complete("Reminder completed!", {
-      description: `${useCapitalizeWords(label)}${time ? ` • ${time}` : ""}`,
-      duration: 0,
-      sound: "success",
-      closable: true,
-    });
-  });
 }
 
 const cardStyle = computed(() => {
@@ -275,7 +285,7 @@ function onPointerUp(e: PointerEvent) {
     const flingY = swipeIsUp ? -(h + 80) : 0;
 
     drag.value = null;
-    requestClose({ x: flingX || dx, y: flingY || dy });
+    requestClose({ x: flingX || dx, y: flingY || dy }, undefined, true);
     return;
   }
 

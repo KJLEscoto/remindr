@@ -134,7 +134,7 @@
           data-drawer-no-drag
           type="submit"
           :disabled="!canApplyBackground"
-          class="w-full md:py-3 py-2.5 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed md:text-base text-sm"
+          class="w-full md:py-3 py-2.5 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-base"
         >
           Set Background
         </button>

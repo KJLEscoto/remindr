@@ -16,13 +16,13 @@
 
       <form class="md:space-y-3 space-y-2" @submit.prevent="saveReminder">
         <input v-model.trim="label"
-          class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light text-white md:text-base text-sm" name="label"
+          class="w-full rounded-full bg-white/10 px-5 py-3 outline-none placeholder:font-light text-white text-base" name="label"
           type="text" id="label" placeholder="Remind me of..." autocomplete="off" />
 
         <TimePicker v-model="time" name="time" />
 
         <button data-drawer-no-drag type="submit"
-          class="w-full md:py-3 py-2.5 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed md:text-base text-sm"
+          class="w-full md:py-3 py-2.5 rounded-full bg-white text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-base"
           :disabled="!canSubmit">
           Set Reminder
         </button>
