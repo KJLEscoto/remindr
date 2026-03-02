@@ -1,0 +1,44 @@
+<template>
+  <div class="loader"></div>
+</template>
+
+<style scoped>
+/* From Uiverse.io by doniaskima */
+/* HTML: <div class="loader"></div> */
+.loader {
+  display: inline-flex;
+  border: 1px solid #ffffff3a;
+  border-radius: 2rem;
+  padding: 1rem;
+  --c: no-repeat linear-gradient(#fff 0 0) 50%;
+  background:
+    var(--c) calc(50% - 5px) / 5px 5px,
+    var(--c) calc(50% + 5px) / 5px 5px;
+}
+
+.loader::before,
+.loader::after {
+  content: "12 00 23 40 31 45 60 17 45 32 29 42 50 08 14 07 46 11 03 55";
+  font-size: 30px;
+  font-family: monospace;
+  font-weight: bold;
+  line-height: 1em;
+  height: 1em;
+  width: 2ch;
+  color: #0000;
+  text-shadow: 0 0 0 #fff;
+  overflow: hidden;
+  margin: 5px 10px;
+  animation: l3 1s steps(20) infinite;
+}
+
+.loader::before {
+  animation-duration: 1.5s;
+}
+
+@keyframes l3 {
+  100% {
+    text-shadow: 0 -20em 0 #000;
+  }
+}
+</style>
