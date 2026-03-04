@@ -82,7 +82,7 @@ Run Project Locally
 
 <hr />
 
-## 🧑‍💻 Developer
+## 🧑‍💻 Creator
 This mini project was designed & developed by:
 - [Kent Joemar Escoto](https://github.com/KJLEscoto)
 
