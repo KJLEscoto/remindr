@@ -8,7 +8,7 @@
     <img src="https://img.shields.io/badge/-Nuxt-black?style=for-the-badge&logoColor=white&logo=nuxt&color=00C58E" alt="nuxt" />
     <img src="https://img.shields.io/badge/-TypeScript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178c6" alt="typescript" />
     <img src="https://img.shields.io/badge/-Tailwind%20CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=38BDF8" alt="tailwindcss" />
-    <img src="https://img.shields.io/badge/-ChatGPT-black?style=for-the-badge&logo=chatgpt&logoColor=white&logo=chatgpt&color=181818" alt="chatgpt" />
+    <img src="https://img.shields.io/badge/-ChatGPT-black?style=for-the-badge&logo=openai&logoColor=white&color=412991" alt="chatgpt" />
   </div>
 
   <div>
