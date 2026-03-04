@@ -12,10 +12,10 @@
   </div>
 
   <div>
-    <img src="https://img.shields.io/badge/-Netlify-black?style=for-the-badge&logoColor=white&logo=netlify&color=04a29f" alt="netlify" />
-    <img src="https://img.shields.io/badge/-Figma-black?style=for-the-badge&logo=figma&logoColor=white&logo=figma&color=1e1e1e" alt="figma" />
-    <img src="https://img.shields.io/badge/-Lucide-black?style=for-the-badge&logo=lucide&logoColor=white&logo=lucide&color=ff7070" alt="lucide" />
-    <img src="https://img.shields.io/badge/-Git-black?style=for-the-badge&logoColor=white&logo=git&color=F05032" alt="git" />
+    <img src="https://img.shields.io/badge/-Netlify-black?style=for-the-badge&logo=netlify&logoColor=white&color=04a29f" alt="netlify" />
+    <img src="https://img.shields.io/badge/-Figma-black?style=for-the-badge&logo=figma&logoColor=white&color=1e1e1e" alt="figma" />
+    <img src="https://img.shields.io/badge/-Lucide-black?style=for-the-badge&logo=lucide&logoColor=white&color=ff7070" alt="lucide" />
+    <img src="https://img.shields.io/badge/-Git-black?style=for-the-badge&logo=git&logoColor=white&color=F05032" alt="git" />
   </div>
 
   <h3 align="center">Remindr: A sleek, video-themed reminder app that allows you to set alarms, track countdowns, and mark tasks done with a clean, distraction-free interface.</h3>
@@ -36,8 +36,8 @@ Make sure you have the following installed on your computer/device:
 Run Project Locally
 <details>
 <summary><code>1. Clone the repository (Source Code)</code></summary>
+<br />
 
-  >
   > In your Desktop, open a command prompt of your choice (git bash, cmd, or any)
   > ```bash
   > git clone https://github.com/KJLEscoto/remindr.git
@@ -54,6 +54,7 @@ Run Project Locally
 
 <details>
 <summary><code>2. Install Dependencies for Nuxt 4</code></summary>
+<br />
   
   > Install modules
   > ```bash
@@ -89,12 +90,23 @@ This mini project was designed & developed by:
 You can visit and send a message to my following socials:
 
 <div>
+  <a href="https://kinwebb.netlify.app/" target="_blank">
+    <img src="https://img.shields.io/badge/-KinWebb-black?style=for-the-badge&logoColor=121212&logo=codecrafters&color=ffffff" alt="kinwebb" />
+  </a>
   <a href="mailto:kin.webb.1024@gmail.com" target="_blank">
     <img src="https://img.shields.io/badge/-Email-black?style=for-the-badge&logoColor=white&logo=gmail&color=EA4335" alt="email" />
   </a>
-
-  <a href="https://kinwebb.netlify.app/" target="_blank">
-    <img src="https://img.shields.io/badge/-KinWebb-black?style=for-the-badge&logoColor=white&logo=codecrafters&color=121212" alt="kinwebb" />
+  <a href="https://dribbble.com/kinwebb" target="_blank">
+    <img src="https://img.shields.io/badge/-Dribbble-black?style=for-the-badge&logoColor=white&logo=dribbble&color=EA4C89" alt="dribbble" />
+  </a>
+  <a href="https://www.facebook.com/kentoy.newt" target="_blank">
+    <img src="https://img.shields.io/badge/-Facebook-black?style=for-the-badge&logoColor=white&logo=facebook&color=0866FF" alt="facebook" />
+  </a>
+  <a href="https://www.instagram.com/_itskjle/" target="_blank">
+    <img src="https://img.shields.io/badge/-Instagram-black?style=for-the-badge&logoColor=white&logo=instagram&color=FF0069" alt="instagram" />
+  </a>
+  <a href="https://www.linkedin.com/in/kent-joemar-escoto-646b92265/" target="_blank">
+    <img src="https://img.shields.io/badge/-LinkedIn-black?style=for-the-badge&logoColor=white&logo=linkedin&color=0073b2" alt="linkedin" />
   </a>
 </div>
 
