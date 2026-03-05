@@ -17,15 +17,30 @@
         <!-- Slides: reminders -->
         <div v-for="item in reminders" :key="item.id" class="w-full shrink-0 px-2">
           <div class="md:text-8xl text-6xl flex items-center justify-center md:gap-4 gap-3 font-instrument !text-nowrap">
-            <template v-if="remainingMap.get(item.id)">
-              - {{ remainingMap.get(item.id)!.hour }}
-              <Delimiter /> {{ remainingMap.get(item.id)!.minute }}
-              <Delimiter /> {{ remainingMap.get(item.id)!.second }}
+            <template v-if="item.type === 'alarm'">
+              <template v-if="remainingMap.get(item.id)">
+                - {{ remainingMap.get(item.id)!.hour }}
+                <Delimiter /> {{ remainingMap.get(item.id)!.minute }}
+                <Delimiter /> {{ remainingMap.get(item.id)!.second }}
+              </template>
+              <template v-else>
+                - --
+                <Delimiter /> --
+                <Delimiter /> --
+              </template>
             </template>
+
             <template v-else>
-              - --
-              <Delimiter /> --
-              <Delimiter /> --
+              <template v-if="getTimerRemaining(item)">
+                - {{ getTimerRemaining(item)!.hour }}
+                <Delimiter /> {{ getTimerRemaining(item)!.minute }}
+                <Delimiter /> {{ getTimerRemaining(item)!.second }}
+              </template>
+              <template v-else>
+                - --
+                <Delimiter /> --
+                <Delimiter /> --
+              </template>
             </template>
           </div>
 
@@ -46,43 +61,87 @@
 </template>
 
 <script setup lang="ts">
-type Remaining = { hour: string; minute: string; second: string } | null
-type Reminder = { id: string; label: string; time: string; createdAt: string }
+type Remaining = { hour: string; minute: string; second: string } | null;
+type ReminderType = "alarm" | "timer";
+type Reminder = { id: string; label: string; time: string; createdAt: string; type: ReminderType };
 
 const props = defineProps<{
-  hour: string
-  minute: string
-  second: string
-  period: string
-  date: string
-  reminders: Reminder[]
-  remainingMap: Map<string, Remaining>
-  currentTime: string // ✅ add
-}>()
+  hour: string;
+  minute: string;
+  second: string;
+  period: string;
+  date: string;
+  reminders: Reminder[];
+  remainingMap: Map<string, Remaining>;
+  currentTime: string; // for alarms
+  nowMs: number;       // ✅ for timers
+}>();
 
 const emit = defineEmits<{
-  (e: "update:activeIndex", v: number): void
-  (e: "trigger", id: string): void
-}>()
+  (e: "update:activeIndex", v: number): void;
+  (e: "trigger", id: string): void;
+}>();
+
+function parseDurationToMs(hms: string) {
+  const m = hms.trim().match(/^(\d{2}):(\d{2}):(\d{2})$/);
+  if (!m) return 0;
+  const hh = Number(m[1]);
+  const mm = Number(m[2]);
+  const ss = Number(m[3]);
+  return ((hh * 60 + mm) * 60 + ss) * 1000;
+}
+
+function msToRemaining(ms: number): Remaining {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const hh = Math.floor(total / 3600);
+  const mm = Math.floor((total % 3600) / 60);
+  const ss = total % 60;
+
+  return {
+    hour: String(hh).padStart(2, "0"),
+    minute: String(mm).padStart(2, "0"),
+    second: String(ss).padStart(2, "0"),
+  };
+}
+
+function getTimerRemaining(r: Reminder): Remaining {
+  if (r.type !== "timer") return null;
+  const start = Date.parse(r.createdAt);
+  if (!Number.isFinite(start)) return null;
+
+  const dur = parseDurationToMs(r.time);
+  if (!dur) return null;
+
+  const end = start + dur;
+  return msToRemaining(end - props.nowMs);
+}
 
 const triggered = ref(new Set<string>())
 
 watch(
-  () => props.currentTime,
-  (nowStr) => {
+  () => [props.currentTime, props.nowMs, props.reminders] as const,
+  () => {
     for (const r of props.reminders) {
-      // normalize spaces/case just in case
-      const a = nowStr.trim().toUpperCase()
-      const b = r.time.trim().toUpperCase()
+      if (triggered.value.has(r.id)) continue;
 
-      if (a !== b) continue
-      if (triggered.value.has(r.id)) continue
-
-      triggered.value.add(r.id)
-      emit("trigger", r.id)
+      if (r.type === "alarm") {
+        const a = props.currentTime.trim().toUpperCase();
+        const b = r.time.trim().toUpperCase();
+        if (a === b) {
+          triggered.value.add(r.id);
+          emit("trigger", r.id);
+        }
+      } else if (r.type === "timer") {
+        const rem = getTimerRemaining(r);
+        if (rem && rem.hour === "00" && rem.minute === "00" && rem.second === "00") {
+          triggered.value.add(r.id);
+          emit("trigger", r.id);
+        }
+      }
     }
-  }
-)
+  },
+  { deep: true }
+);
 
 const totalSlides = computed(() => 1 + props.reminders.length)
 const activeIndex = ref(0)

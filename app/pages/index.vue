@@ -1,39 +1,21 @@
 <template>
   <main class="h-screen w-full relative">
     <!-- background video -->
-    <video
-      ref="bgVideoEl"
-      class="absolute inset-0 h-full w-full object-cover pointer-events-none"
-      :src="savedBg.src"
-      autoplay
-      muted
-      loop
-      playsinline
-      webkit-playsinline
-      preload="auto"
-      disablepictureinpicture
-      controlslist="nodownload noplaybackrate noremoteplayback"
-      aria-hidden="true"
-    />
+    <video ref="bgVideoEl" class="absolute inset-0 h-full w-full object-cover pointer-events-none" :src="savedBg.src"
+      autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture
+      controlslist="nodownload noplaybackrate noremoteplayback" aria-hidden="true" />
 
-    <div
-      class="relative z-20 h-full w-full flex flex-col gap-5 items-center justify-center"
-    >
+    <div class="relative z-20 h-full w-full flex flex-col gap-5 items-center justify-center">
       <section class="max-w-2xl mx-auto w-full px-4">
-        <div
-          class="rounded-[3rem] h-fit w-full bg-glass md:p-6 p-5 flex flex-col md:gap-10 gap-7"
-        >
+        <div class="rounded-[3rem] h-fit w-full bg-glass md:p-6 p-5 flex flex-col md:gap-10 gap-7">
           <!-- Actions -->
           <section class="flex items-center justify-between w-full">
             <div class="flex items-center gap-2">
               <ActionSetReminder />
 
               <Transition name="pop">
-                <ActionMarkAsDone
-                  v-if="activeIndex > 0 && currentReminder"
-                  :reminder-id="currentReminder.id"
-                  @done="afterDone"
-                />
+                <ActionMarkAsDone v-if="activeIndex > 0 && currentReminder" :reminder-id="currentReminder.id"
+                  @done="afterDone" />
               </Transition>
             </div>
 
@@ -41,47 +23,43 @@
           </section>
 
           <!-- Carousel -->
-          <ReminderCarousel
-            v-model:activeIndex="activeIndex"
-            :hour="hour"
-            :minute="minute"
-            :second="second"
-            :period="period"
-            :date="date"
-            :reminders="reminders"
-            :remainingMap="remainingMap"
-            :currentTime="currentTime"
-            @trigger="handleTrigger"
-          />
+          <ReminderCarousel :nowMs="nowMs" v-model:activeIndex="activeIndex" :hour="hour" :minute="minute"
+            :second="second" :period="period" :date="date" :reminders="reminders" :remainingMap="remainingMap"
+            :currentTime="currentTime" @trigger="handleTrigger" />
         </div>
       </section>
     </div>
     <div
-  class="flex items-center justify-center gap-1 w-full md:text-xs text-[.6rem] text-white/30 absolute bottom-5 z-40"
->
-  <p>Powered by</p>
+      class="flex items-center justify-center gap-1 w-full md:text-xs text-[.6rem] text-white/30 absolute bottom-5 z-40">
+      <p>Powered by</p>
 
-  <a
-    href="https://kinwebb.netlify.app/"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="text-white/60 hover:!text-white/100 ease-in transition-all duration-200 group relative inline-block"
-  >
-    KinWebb
+      <a href="https://kinwebb.netlify.app/" target="_blank" rel="noopener noreferrer"
+        class="text-white/60 hover:!text-white/100 ease-in transition-all duration-200 group relative inline-block">
+        KinWebb
 
-    <img
-      src="/model.png"
-      alt="kinwebb"
-      class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 size-8 opacity-0 translate-y-2 scale-75 transition-all duration-300 ease-in pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100"
-    />
-  </a>
-</div>
+        <img src="/model.png" alt="kinwebb"
+          class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 size-8 opacity-0 translate-y-2 scale-75 transition-all duration-300 ease-in pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100" />
+      </a>
+    </div>
   </main>
 </template>
 
 <script setup lang="ts">
 import { toast } from "~/lib/toast";
 const { $background } = useNuxtApp();
+
+const nowMs = ref(Date.now());
+let nowTimer: ReturnType<typeof setInterval> | null = null;
+
+onMounted(() => {
+  nowTimer = setInterval(() => {
+    nowMs.value = Date.now();
+  }, 1000);
+});
+
+onBeforeUnmount(() => {
+  if (nowTimer) clearInterval(nowTimer);
+});
 
 async function handleTrigger(id: string) {
   const item = reminders.value.find((r) => r.id === id);
@@ -100,13 +78,24 @@ async function handleTrigger(id: string) {
     });
   }
 
-  toast.alarm(`${item.time}`, {
-    description: `${useCapitalizeWords(item.label)}`,
-    duration: 0,
-    sound: "alarm",
-    soundLoop: true,
-    closable: false,
-  });
+  if (item.type === "timer") {
+    toast.timer(`${item.time}`, {
+      description: `${useCapitalizeWords(item.label)}`,
+      duration: 0,
+      sound: "alarm",
+      soundLoop: true,
+      closable: false,
+    });
+  }
+  if (item.type === "alarm") {
+    toast.alarm(`${item.time}`, {
+      description: `${useCapitalizeWords(item.label)}`,
+      duration: 0,
+      sound: "alarm",
+      soundLoop: true,
+      closable: false,
+    });
+  }
 }
 
 const time = useCurrentTime();
@@ -125,7 +114,9 @@ const reminders = computed(() => $reminders.list.value ?? []);
 
 const remainingMap = computed(() => {
   const map = new Map<string, ReturnType<typeof remaining>>();
-  for (const item of reminders.value) map.set(item.id, remaining(item.time));
+  for (const item of reminders.value) {
+    if (item.type === "alarm") map.set(item.id, remaining(item.time));
+  }
   return map;
 });
 
@@ -186,7 +177,7 @@ watch(
 
     try {
       await v.play();
-    } catch {}
+    } catch { }
   },
   { immediate: true },
 );

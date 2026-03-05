@@ -41,6 +41,7 @@
                   v-model="draftHour"
                   class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer"
                 >
+                  <option class="text-black" value="--">--</option>
                   <option
                     class="text-black"
                     v-for="h in hours"
@@ -67,6 +68,7 @@
                   v-model="draftMinute"
                   class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer"
                 >
+                  <option class="text-black" value="--">--</option>
                   <option
                     class="text-black"
                     v-for="m in minutes"
@@ -93,6 +95,7 @@
                   v-model="draftPeriod"
                   class="appearance-none w-full rounded-full bg-white/10 border border-white/10 px-3 py-2 outline-none cursor-pointer"
                 >
+                  <option class="text-black" value="--">--</option>
                   <option class="text-black" value="AM">AM</option>
                   <option class="text-black" value="PM">PM</option>
                 </select>

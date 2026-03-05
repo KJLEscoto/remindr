@@ -32,7 +32,7 @@
         <X class="size-5 pointer-events-none" />
       </button>
 
-      <button v-if="toast.variant === 'alarm'" type="button"
+      <button v-if="toast.variant === 'alarm' || toast.variant === 'timer'" type="button"
         class="ml-2 rounded-lg p-2 text-white/70 transition hover:bg-green-500/30 hover:text-white" aria-label="Dismiss"
         data-no-drag @pointerdown.stop.prevent @mousedown.stop.prevent @click.stop="requestAlarmDone()">
         <Check class="size-5 pointer-events-none" />
@@ -51,6 +51,7 @@ import {
   Info,
   ClockCheck,
   AlarmClock,
+  Timer,
   ClockPlus,
   Loader2,
   Bell,
@@ -84,6 +85,8 @@ const icon = computed(() => {
       return ClockCheck;
     case "alarm":
       return AlarmClock;
+    case "timer":
+      return Timer;
     case "loading":
       return Loader2;
     case "error":
@@ -150,7 +153,7 @@ function requestClose(
     emit("dismiss");
 
     // ✅ alarm swipe dismiss => still show confirmation toast
-    if (bySwipe && props.toast.variant === "alarm") {
+    if (bySwipe && (props.toast.variant === "alarm" || props.toast.variant === "timer")) {
       showAlarmCompletedToast();
     } else {
       afterClose?.();

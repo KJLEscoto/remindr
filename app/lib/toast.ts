@@ -9,6 +9,7 @@ export type ToastVariant =
   | "warning"
   | "set"
   | "complete"
+  | "timer"
   | "alarm"
   | "info"
   | "loading";
@@ -126,6 +127,8 @@ toast.set = (label: string, o: ToastOptions = {}) =>
   toast({ ...o, variant: "set", label });
 toast.complete = (label: string, o: ToastOptions = {}) =>
   toast({ ...o, variant: "complete", label });
+toast.timer = (label: string, o: ToastOptions = {}) =>
+  toast({ ...o, variant: "timer", label });
 toast.alarm = (label: string, o: ToastOptions = {}) =>
   toast({ ...o, variant: "alarm", label });
 toast.warning = (label: string, o: ToastOptions = {}) =>
