@@ -15,7 +15,7 @@
         </p>
       </section>
 
-      <section class="flex w-full items-center gap-5">
+      <section class="flex w-full items-center md:gap-5 gap-3">
         <ActionSelectType type="Alarm" @select="onSelect" />
         <ActionSelectType type="Timer" @select="onSelect" />
       </section>
