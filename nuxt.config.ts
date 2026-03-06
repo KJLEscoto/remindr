@@ -33,7 +33,7 @@ export default defineNuxtConfig({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
 
       // search console verification
-      { name: 'google-site-verification', content: 'google33666a629c927ea5.html' },
+      { name: 'google-site-verification', content: 'eMMfU0WDt9Hz-TWRGBTQY-mgFsF66m9octorJRumMzQ' },
 
       // SEO
       {
