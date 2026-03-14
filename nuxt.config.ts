@@ -50,7 +50,7 @@ export default defineNuxtConfig({
         content:
           "A sleek, video-themed reminder app that allows you to set alarms, track countdowns, and mark tasks done with a clean, distraction-free interface.",
       },
-      { property: "og:image", content: "/images/meta_thumbnail.png" },
+      { property: "og:image", content: "https://kinwebb.netlify.app/remindr_thumbnail.png" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { property: "og:image:type", content: "image/png" },
@@ -63,7 +63,7 @@ export default defineNuxtConfig({
         content:
           "A sleek, video-themed reminder app that allows you to set alarms, track countdowns, and mark tasks done with a clean, distraction-free interface.",
       },
-      { name: "twitter:image", content: "/images/meta_thumbnail.png" },
+      { name: "twitter:image", content: "https://kinwebb.netlify.app/remindr_thumbnail.png" },
     ],
     link: [{ rel: "icon", type: "image/png", href: "/remindr.png" }],
   },
