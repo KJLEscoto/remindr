@@ -5,7 +5,18 @@ export default defineNuxtConfig({
   // typescript: {
   //   typeCheck: true,
   // },
-  modules: ['@nuxtjs/tailwindcss', '@nuxt/fonts'],
+  modules: ['@nuxtjs/tailwindcss', '@nuxt/fonts', 'kinwebb-attribute'],
+
+  // kinwebbAttribute: {
+  //   href: 'https://kinwebb.netlify.app/',
+  //   label: 'Powered by',
+  //   name: 'KinWebb',
+  //   iconSrc: 'https://kinwebb.netlify.app/favicon.png',
+  //   bottom: '0px',
+  //   enabled: true,
+  //   fontFamily: 'Inter, sans-serif'
+  // },
+
   fonts: {
     families: [
       {
