@@ -4,7 +4,7 @@
   <br />
   <br />
 
-  [![Nuxt 4](https://img.shields.io/badge/Nuxt%204-002E3B?logo=nuxt&logoColor=%2300DC82)](https://nuxt.com/) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](https://www.typescriptlang.org/) [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind%20CSS%204-%2338B2AC.svg?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)[![ChatGPT](https://custom-icon-badges.demolab.com/badge/ChatGPT-74aa9c?logo=openai&logoColor=white)](https://chatgpt.com/)
+  [![Nuxt 4](https://img.shields.io/badge/Nuxt%204-002E3B?logo=nuxt&logoColor=%2300DC82)](https://nuxt.com/) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](https://www.typescriptlang.org/) [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind%20CSS%204-%2338B2AC.svg?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/) [![ChatGPT](https://custom-icon-badges.demolab.com/badge/ChatGPT-74aa9c?logo=openai&logoColor=white)](https://chatgpt.com/)
 
   [![Netlify](https://img.shields.io/badge/Netlify-%23000000.svg?logo=netlify&logoColor=%2300C7B7)](https://app.netlify.com/) [![Figma](https://img.shields.io/badge/Figma-F24E1E?logo=figma&logoColor=white)](https://figma.com/) [![Lucide](https://img.shields.io/badge/Lucide-ff7070?logo=lucide&logoColor=white)](https://lucide.dev/) [![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=fff)](https://git-scm.com/)
 
