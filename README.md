@@ -1,22 +1,12 @@
 <div align="center">
   <br />
-    <img src="https://drive.google.com/uc?export=view&id=17WdXCMhZVivcloVq7BpK6UWVLrUaxiUf" alt="remindr_thumbnail_readme" width="600" />
+    <img src="https://drive.google.com/uc?export=view&id=19_ZX-TzIZEI5cmXJu7yiGKrXIa2nJJHV" alt="remindr_thumbnail_readme" width="600" />
   <br />
   <br />
 
-  <div>
-    <img src="https://img.shields.io/badge/-Nuxt-black?style=for-the-badge&logoColor=white&logo=nuxt&color=00C58E" alt="nuxt" />
-    <img src="https://img.shields.io/badge/-TypeScript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178c6" alt="typescript" />
-    <img src="https://img.shields.io/badge/-Tailwind%20CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=38BDF8" alt="tailwindcss" />
-    <img src="https://img.shields.io/badge/-ChatGPT-black?style=for-the-badge&logo=openai&logoColor=white&color=412991" alt="chatgpt" />
-  </div>
+  [![Nuxt 4](https://img.shields.io/badge/Nuxt%204-002E3B?logo=nuxt&logoColor=%2300DC82)](https://nuxt.com/) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](https://www.typescriptlang.org/) [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind%20CSS%204-%2338B2AC.svg?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)[![ChatGPT](https://custom-icon-badges.demolab.com/badge/ChatGPT-74aa9c?logo=openai&logoColor=white)](https://chatgpt.com/)
 
-  <div>
-    <img src="https://img.shields.io/badge/-Netlify-black?style=for-the-badge&logo=netlify&logoColor=white&color=04a29f" alt="netlify" />
-    <img src="https://img.shields.io/badge/-Figma-black?style=for-the-badge&logo=figma&logoColor=white&color=1e1e1e" alt="figma" />
-    <img src="https://img.shields.io/badge/-Lucide-black?style=for-the-badge&logo=lucide&logoColor=white&color=ff7070" alt="lucide" />
-    <img src="https://img.shields.io/badge/-Git-black?style=for-the-badge&logo=git&logoColor=white&color=F05032" alt="git" />
-  </div>
+  [![Netlify](https://img.shields.io/badge/Netlify-%23000000.svg?logo=netlify&logoColor=%2300C7B7)](https://app.netlify.com/) [![Figma](https://img.shields.io/badge/Figma-F24E1E?logo=figma&logoColor=white)](https://figma.com/) [![Lucide](https://img.shields.io/badge/Lucide-ff7070?logo=lucide&logoColor=white)](https://lucide.dev/) [![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=fff)](https://git-scm.com/)
 
   <h3 align="center">Remindr: A sleek, video-themed reminder app that allows you to set alarms, track countdowns, and mark tasks done with a clean, distraction-free interface.</h3>
 
@@ -89,26 +79,7 @@ This mini project was designed & developed by:
 ## ❔ Where to find me?
 You can visit and send a message to my following socials:
 
-<div>
-  <a href="https://kinwebb.netlify.app/" target="_blank">
-    <img src="https://img.shields.io/badge/-KinWebb-black?style=for-the-badge&logoColor=121212&logo=codecrafters&color=ffffff" alt="kinwebb" />
-  </a>
-  <a href="mailto:kin.webb.1024@gmail.com" target="_blank">
-    <img src="https://img.shields.io/badge/-Email-black?style=for-the-badge&logoColor=white&logo=gmail&color=EA4335" alt="email" />
-  </a>
-  <a href="https://dribbble.com/kinwebb" target="_blank">
-    <img src="https://img.shields.io/badge/-Dribbble-black?style=for-the-badge&logoColor=white&logo=dribbble&color=EA4C89" alt="dribbble" />
-  </a>
-  <a href="https://www.facebook.com/kentoy.newt" target="_blank">
-    <img src="https://img.shields.io/badge/-Facebook-black?style=for-the-badge&logoColor=white&logo=facebook&color=0866FF" alt="facebook" />
-  </a>
-  <a href="https://www.instagram.com/_itskjle/" target="_blank">
-    <img src="https://img.shields.io/badge/-Instagram-black?style=for-the-badge&logoColor=white&logo=instagram&color=FF0069" alt="instagram" />
-  </a>
-  <a href="https://www.linkedin.com/in/kent-joemar-escoto-646b92265/" target="_blank">
-    <img src="https://img.shields.io/badge/-LinkedIn-black?style=for-the-badge&logoColor=white&logo=linkedin&color=0073b2" alt="linkedin" />
-  </a>
-</div>
+[![KinWebb](https://img.shields.io/badge/KinWebb-ffffff?logo=codecrafters&logoColor=black)](https://kinwebb.netlify.app/) [![Gmail](https://img.shields.io/badge/Gmail-D14836?logo=gmail&logoColor=white)](mailto:kin.webb.1024@gmail.com) [![Dribbble](https://img.shields.io/badge/Dribbble-EA4C89?logo=dribbble&logoColor=white)](https://dribbble.com/kinwebb) [![Facebook](https://img.shields.io/badge/Facebook-%231877F2.svg?logo=Facebook&logoColor=white)](https://www.facebook.com/kentoy.newt) [![LinkedIn](https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?logo=linkedin-white&logoColor=fff)](https://www.instagram.com/_itskjle/)
 
 ## ©️ Copyright
 Designed and developed by KinWebb. © 2026 Kent Joemar Escoto 💻
