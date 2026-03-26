@@ -1,4 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const siteTitle = "Remindr | KinWebb";
+const siteDescription =
+  "A sleek, video-themed reminder app that allows you to set alarms, track countdowns, and mark tasks done with a clean, distraction-free interface. Designed and developed by KinWebb. © 2026 Kent Joemar Escoto.";
+const siteVerification = "eMMfU0WDt9Hz-TWRGBTQY-mgFsF66m9octorJRumMzQ";
+const siteThumbnail = "https://kinwebb.netlify.app/remindr_thumbnail.png";
+const siteIcon = "/remindr.png";
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -38,45 +45,42 @@ export default defineNuxtConfig({
   },
   app: {
   head: {
-    title: "Remindr | KinWebb",
+    title: siteTitle,
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
 
       // search console verification
-      { name: 'google-site-verification', content: 'eMMfU0WDt9Hz-TWRGBTQY-mgFsF66m9octorJRumMzQ' },
+      { name: 'google-site-verification', content: siteVerification },
 
       // SEO
       {
         name: "description",
-        content:
-          "A sleek, video-themed reminder app that allows you to set alarms, track countdowns, and mark tasks done with a clean, distraction-free interface. Designed and developed by KinWebb. © 2026 Kent Joemar Escoto.",
+        content: siteDescription,
       },
 
       // Open Graph (previews: FB, Discord, iMessage, etc.)
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "Remindr | KinWebb" },
+      { property: "og:title", content: siteTitle },
       {
         property: "og:description",
-        content:
-          "A sleek, video-themed reminder app that allows you to set alarms, track countdowns, and mark tasks done with a clean, distraction-free interface.",
+        content: siteDescription,
       },
-      { property: "og:image", content: "https://kinwebb.netlify.app/remindr_thumbnail.png" },
+      { property: "og:image", content: siteThumbnail },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { property: "og:image:type", content: "image/png" },
 
       // Twitter/X
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Remindr | KinWebb" },
+      { name: "twitter:title", content: siteTitle },
       {
         name: "twitter:description",
-        content:
-          "A sleek, video-themed reminder app that allows you to set alarms, track countdowns, and mark tasks done with a clean, distraction-free interface.",
+        content: siteDescription,
       },
-      { name: "twitter:image", content: "https://kinwebb.netlify.app/remindr_thumbnail.png" },
+      { name: "twitter:image", content: siteThumbnail },
     ],
-    link: [{ rel: "icon", type: "image/png", href: "/remindr.png" }],
+    link: [{ rel: "icon", type: "image/png", href: siteIcon }],
   },
 },
 })
